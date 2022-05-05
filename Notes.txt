@@ -1,0 +1,12 @@
+Ideas:
+- transform logs into images, then use CNNs for prediction, pattern/feature engineering, problem classification
+- use transfer learning
+
+L* gives 3 possible avenues for results:
+
+1. DETECT problems in execution
+2. PREDICT execution of current cases
+3. RECOMMEND changes in execution
+
+As our goal for this project we pick <1/2/3>, since <argumentation>.
+
