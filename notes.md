@@ -23,3 +23,9 @@ For every major business change, what does the descriptive statistics look like?
 How can we detect drifts from steady state A to B?
 
 
+### Meeting May 16
+How do the average steps to resolution change over time (for all sub categories)?
+What are the average business hours lost (per category, per impact value)?
+How can we build a regression model that given some predictor variables predicts {how long a case will take/whether a case will be reopened}?
+How can we predict time left using LTSs?
+How many incidents took place for SCs?
