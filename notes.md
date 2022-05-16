@@ -20,5 +20,6 @@ What is the throughput time for every activity?
 What does the spike in events represent?
 How much time does it take after a change to go back to a steady state?
 For every major business change, what does the descriptive statistics look like?
+How can we detect drifts from steady state A to B?
 
 
