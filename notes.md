@@ -30,3 +30,14 @@ How can we build a regression model that given some predictor variables predicts
 How can we predict time left using LTSs?
 How many incidents took place for SCs?
 What are the different versions of the incident management process (and stats about them)?
+
+
+Analyze handovers between teams
+
+### Meeting May 18
+Chosen business questions:
+- How can we predict time left using LTSs?
+- What are the average business hours lost (per category, per impact value)?
+- choose 1:
+	1. How does time affect the process? (are there patterns in time, e.g., faster processing in weekends)
+	2. What are the bottlenecks in the process? 
