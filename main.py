@@ -6,7 +6,7 @@
 
 
 # Press the green button in the gutter to run the script.
-from DataRetriever import DataRetriever
+from dataRetriever import DataRetriever
 
 if __name__ == '__main__':
     retriever = DataRetriever("incidentProcess_custom.csv")
@@ -15,8 +15,10 @@ if __name__ == '__main__':
                                            act_col='Activity',
                                            time_col='ActivityTimeStamp')
 
-    "retriever.create_diagram(event_log)"
+    retriever.create_diagram(event_log)
     retriever.get_dataHead()
+
+    # retriever.create_diagram()
 
     print(retriever.getDescribe())
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

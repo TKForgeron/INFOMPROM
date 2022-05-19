@@ -1,0 +1,227 @@
+id: 0
+activities: []
+subseq: [1, 26]
+Data:
+{'Incident ID': 'IM0000004', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:17.000', 'Asset Affected': 'SUB000508', 'Asset Type Affected': 'subapplication', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000162', 'Status': 'Closed', 'Impact': 4, 'Urgency': 4, 'Priority': 4, 'Category': 'incident', 'Number of Reassignments': 26.0, 'Open Time': '05/02/2012 13:32:57', 'Reopen Time': nan, 'Resolved Time': '04/11/2013 13:50:27', 'Close Time': '04/11/2013 13:51:17', 'Handle Time (Hours)': '3871,691111', 'Closure Code': 'Other', 'Asset Caused': 'SUB000508', 'Asset Type Caused': 'subapplication', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000162', 'Assignment Group': 'TEAM0001'}
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+{'Incident ID': 'IM0000006', 'Activity': 'Close', 'ActivityTimeStamp': '2014-01-13 15:13:13.000', 'Asset Affected': 'DTA000024', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Desktop Application', 'Service Affected': 'SRVC000092', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'request for information', 'Number of Reassignments': 3.0, 'Open Time': '29/03/2012 12:36:01', 'Reopen Time': nan, 'Resolved Time': '13/01/2014 15:12:38', 'Close Time': '13/01/2014 15:13:11', 'Handle Time (Hours)': '4843,119444', 'Closure Code': 'No error - works as designed', 'Asset Caused': 'DTA000024', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Desktop Application', 'Service Caused': 'SRVC000092', 'Assignment Group': 'TEAM0170'}
+
+--------------------------------------
+
+id: 1
+activities: ['Assign to 2nd Line Operator']
+subseq: [2, 9]
+Data:
+{'Incident ID': 'IM0000004', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:17.000', 'Asset Affected': 'SUB000508', 'Asset Type Affected': 'subapplication', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000162', 'Status': 'Closed', 'Impact': 4, 'Urgency': 4, 'Priority': 4, 'Category': 'incident', 'Number of Reassignments': 26.0, 'Open Time': '05/02/2012 13:32:57', 'Reopen Time': nan, 'Resolved Time': '04/11/2013 13:50:27', 'Close Time': '04/11/2013 13:51:17', 'Handle Time (Hours)': '3871,691111', 'Closure Code': 'Other', 'Asset Caused': 'SUB000508', 'Asset Type Caused': 'subapplication', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000162', 'Assignment Group': 'TEAM0001'}
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 2
+activities: ['Assign to 2nd Line Operator', 'Assign to 1st Line Operator']
+subseq: [3]
+Data:
+{'Incident ID': 'IM0000004', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:17.000', 'Asset Affected': 'SUB000508', 'Asset Type Affected': 'subapplication', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000162', 'Status': 'Closed', 'Impact': 4, 'Urgency': 4, 'Priority': 4, 'Category': 'incident', 'Number of Reassignments': 26.0, 'Open Time': '05/02/2012 13:32:57', 'Reopen Time': nan, 'Resolved Time': '04/11/2013 13:50:27', 'Close Time': '04/11/2013 13:51:17', 'Handle Time (Hours)': '3871,691111', 'Closure Code': 'Other', 'Asset Caused': 'SUB000508', 'Asset Type Caused': 'subapplication', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000162', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 3
+activities: ['Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator']
+subseq: [4]
+Data:
+{'Incident ID': 'IM0000004', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:17.000', 'Asset Affected': 'SUB000508', 'Asset Type Affected': 'subapplication', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000162', 'Status': 'Closed', 'Impact': 4, 'Urgency': 4, 'Priority': 4, 'Category': 'incident', 'Number of Reassignments': 26.0, 'Open Time': '05/02/2012 13:32:57', 'Reopen Time': nan, 'Resolved Time': '04/11/2013 13:50:27', 'Close Time': '04/11/2013 13:51:17', 'Handle Time (Hours)': '3871,691111', 'Closure Code': 'Other', 'Asset Caused': 'SUB000508', 'Asset Type Caused': 'subapplication', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000162', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 4
+activities: ['Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator']
+subseq: [5]
+Data:
+{'Incident ID': 'IM0000004', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:17.000', 'Asset Affected': 'SUB000508', 'Asset Type Affected': 'subapplication', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000162', 'Status': 'Closed', 'Impact': 4, 'Urgency': 4, 'Priority': 4, 'Category': 'incident', 'Number of Reassignments': 26.0, 'Open Time': '05/02/2012 13:32:57', 'Reopen Time': nan, 'Resolved Time': '04/11/2013 13:50:27', 'Close Time': '04/11/2013 13:51:17', 'Handle Time (Hours)': '3871,691111', 'Closure Code': 'Other', 'Asset Caused': 'SUB000508', 'Asset Type Caused': 'subapplication', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000162', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 5
+activities: ['Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator']
+subseq: [6]
+Data:
+{'Incident ID': 'IM0000004', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:17.000', 'Asset Affected': 'SUB000508', 'Asset Type Affected': 'subapplication', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000162', 'Status': 'Closed', 'Impact': 4, 'Urgency': 4, 'Priority': 4, 'Category': 'incident', 'Number of Reassignments': 26.0, 'Open Time': '05/02/2012 13:32:57', 'Reopen Time': nan, 'Resolved Time': '04/11/2013 13:50:27', 'Close Time': '04/11/2013 13:51:17', 'Handle Time (Hours)': '3871,691111', 'Closure Code': 'Other', 'Asset Caused': 'SUB000508', 'Asset Type Caused': 'subapplication', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000162', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 6
+activities: ['Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Update from customer']
+subseq: [7]
+Data:
+{'Incident ID': 'IM0000004', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:17.000', 'Asset Affected': 'SUB000508', 'Asset Type Affected': 'subapplication', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000162', 'Status': 'Closed', 'Impact': 4, 'Urgency': 4, 'Priority': 4, 'Category': 'incident', 'Number of Reassignments': 26.0, 'Open Time': '05/02/2012 13:32:57', 'Reopen Time': nan, 'Resolved Time': '04/11/2013 13:50:27', 'Close Time': '04/11/2013 13:51:17', 'Handle Time (Hours)': '3871,691111', 'Closure Code': 'Other', 'Asset Caused': 'SUB000508', 'Asset Type Caused': 'subapplication', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000162', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 7
+activities: ['Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Update from customer', 'Close']
+subseq: [8]
+Data:
+{'Incident ID': 'IM0000004', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:17.000', 'Asset Affected': 'SUB000508', 'Asset Type Affected': 'subapplication', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000162', 'Status': 'Closed', 'Impact': 4, 'Urgency': 4, 'Priority': 4, 'Category': 'incident', 'Number of Reassignments': 26.0, 'Open Time': '05/02/2012 13:32:57', 'Reopen Time': nan, 'Resolved Time': '04/11/2013 13:50:27', 'Close Time': '04/11/2013 13:51:17', 'Handle Time (Hours)': '3871,691111', 'Closure Code': 'Other', 'Asset Caused': 'SUB000508', 'Asset Type Caused': 'subapplication', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000162', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 8
+activities: ['Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Update from customer', 'Close', 'Set Asset Caused']
+subseq: []
+Data:
+{'Incident ID': 'IM0000004', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:17.000', 'Asset Affected': 'SUB000508', 'Asset Type Affected': 'subapplication', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000162', 'Status': 'Closed', 'Impact': 4, 'Urgency': 4, 'Priority': 4, 'Category': 'incident', 'Number of Reassignments': 26.0, 'Open Time': '05/02/2012 13:32:57', 'Reopen Time': nan, 'Resolved Time': '04/11/2013 13:50:27', 'Close Time': '04/11/2013 13:51:17', 'Handle Time (Hours)': '3871,691111', 'Closure Code': 'Other', 'Asset Caused': 'SUB000508', 'Asset Type Caused': 'subapplication', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000162', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 9
+activities: ['Assign to 2nd Line Operator', 'Update Description Info']
+subseq: [10]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 10
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator']
+subseq: [11]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 11
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator']
+subseq: [12]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 12
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator']
+subseq: [13]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 13
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research']
+subseq: [14]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 14
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator']
+subseq: [15]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 15
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator']
+subseq: [16]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 16
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator']
+subseq: [17]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 17
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator']
+subseq: [18]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 18
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator']
+subseq: [19]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 19
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator']
+subseq: [20]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 20
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Update from customer']
+subseq: [21]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 21
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Update from customer', 'Assign to 2nd Line Operator']
+subseq: [22]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 22
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Update from customer', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator']
+subseq: [23]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 23
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Update from customer', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Update from customer']
+subseq: [24]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 24
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Update from customer', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Update from customer', 'Set Asset Caused']
+subseq: [25]
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 25
+activities: ['Assign to 2nd Line Operator', 'Update Description Info', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Analysis/Research', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Assign to 1st Line Operator', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Update from customer', 'Assign to 2nd Line Operator', 'Assign to 1st Line Operator', 'Update from customer', 'Set Asset Caused', 'Close']
+subseq: []
+Data:
+{'Incident ID': 'IM0000005', 'Activity': 'Assign to 2nd Line Operator', 'ActivityTimeStamp': '2013-01-07 08:17:54.000', 'Asset Affected': 'WBA000124', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Web Based Application', 'Service Affected': 'SRVC000088', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'incident', 'Number of Reassignments': 33.0, 'Open Time': '12/03/2012 15:44:24', 'Reopen Time': '02/12/2013 12:31:02', 'Resolved Time': '02/12/2013 12:36:21', 'Close Time': '02/12/2013 12:36:25', 'Handle Time (Hours)': '4354,786389', 'Closure Code': 'Software', 'Asset Caused': 'WBA000124', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Web Based Application', 'Service Caused': 'SRVC000088', 'Assignment Group': 'TEAM0001'}
+
+--------------------------------------
+
+id: 26
+activities: ['Close']
+subseq: [27]
+Data:
+{'Incident ID': 'IM0000006', 'Activity': 'Close', 'ActivityTimeStamp': '2014-01-13 15:13:13.000', 'Asset Affected': 'DTA000024', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Desktop Application', 'Service Affected': 'SRVC000092', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'request for information', 'Number of Reassignments': 3.0, 'Open Time': '29/03/2012 12:36:01', 'Reopen Time': nan, 'Resolved Time': '13/01/2014 15:12:38', 'Close Time': '13/01/2014 15:13:11', 'Handle Time (Hours)': '4843,119444', 'Closure Code': 'No error - works as designed', 'Asset Caused': 'DTA000024', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Desktop Application', 'Service Caused': 'SRVC000092', 'Assignment Group': 'TEAM0170'}
+
+--------------------------------------
+
+id: 27
+activities: ['Close', 'Set Asset Caused']
+subseq: []
+Data:
+{'Incident ID': 'IM0000006', 'Activity': 'Close', 'ActivityTimeStamp': '2014-01-13 15:13:13.000', 'Asset Affected': 'DTA000024', 'Asset Type Affected': 'application', 'Asset SubType Affected': 'Desktop Application', 'Service Affected': 'SRVC000092', 'Status': 'Closed', 'Impact': 3, 'Urgency': 3, 'Priority': 3, 'Category': 'request for information', 'Number of Reassignments': 3.0, 'Open Time': '29/03/2012 12:36:01', 'Reopen Time': nan, 'Resolved Time': '13/01/2014 15:12:38', 'Close Time': '13/01/2014 15:13:11', 'Handle Time (Hours)': '4843,119444', 'Closure Code': 'No error - works as designed', 'Asset Caused': 'DTA000024', 'Asset Type Caused': 'application', 'Asset SubType Caused': 'Desktop Application', 'Service Caused': 'SRVC000092', 'Assignment Group': 'TEAM0170'}
+
+--------------------------------------
+

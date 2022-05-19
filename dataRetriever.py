@@ -24,6 +24,8 @@ class DataRetriever():
     def getShape(self):
         """returns the number of columns and the number of rows"""
         return self.df.shape
+    
+    
     def getInfo(self):
         return self.df.info
 
