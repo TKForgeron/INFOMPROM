@@ -108,7 +108,7 @@ class ATS:
 
             curr_state = self.states[next_state_id]
 
-            curr_state.add_event(trace[0])
+            curr_state.add_event(event)
         
 
 
