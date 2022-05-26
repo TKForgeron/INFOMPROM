@@ -1,13 +1,15 @@
 import numpy as np
+from nptyping import NDArray, Bool, Shape
+from typing import Any
 
 
 class Model_builder:
-    def __init__(self, data) -> None:
+    def __init__(self, data: NDArray[Any, Any]) -> None:
         self.data = data
         self.model_up_to_date = True
 
-    def add_row(row) -> None:
-        pass
+    def append_row(self, row: NDArray[Any, Any]) -> None:
+        self.data = np.append(self.data, [row], axis=0)
 
 
 # class Data:
