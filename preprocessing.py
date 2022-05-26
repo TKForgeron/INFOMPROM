@@ -135,7 +135,6 @@ def do_all_preprocessing():
         assert np.allclose(
             df.to_numpy(), dfs.to_numpy(), equal_nan=True
         )  # if both are the same, nothing happens, else AssertionError is raised
-
         # END OF TEST >>>
 
         # save/pickle
