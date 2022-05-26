@@ -133,7 +133,7 @@ class ATS:
 
         """
 
-        with open("Output.txt", "w") as text_file:
+        with open("data/ATS_output.txt", "w") as text_file:
 
             for state in self.states:
 
