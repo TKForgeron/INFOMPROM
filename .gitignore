@@ -1,5 +1,7 @@
 # local test files
 ltest*
+debug*.ipynb
+debug.ipynb
 
 # Pickle
 *.pkl
@@ -86,7 +88,6 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-debug*.ipynb
 
 # IPython
 profile_default/
