@@ -1,12 +1,11 @@
 import os
 import pandas as pd
 import multiprocessing as mp
-import datetime
-from pandas_parallel_apply import apply_on_df_parallel, apply_on_series_parallel
+from pandarallel import pandarallel
 
 
 ORG_DATA_DIR = "data/incidentProcess_custom.csv"
-PREP_DATA_DIR = "./data/preprocessed_incident_process_custom.pkl"
+PREP_DATA_DIR = "data/preprocessed_incident_process_custom.pkl"
 ALL_FEATURE_DTYPES = {
     "Incident ID": str,
     "Activity": str,
@@ -58,7 +57,7 @@ NAN_VALUES = [
 def parse_ints(df: pd.DataFrame, parallel: bool = True) -> pd.DataFrame:
 
     # "Handle Time (Hours)" from string to int
-    def rm_comma_to_int(s):
+    def rm_comma_to_int(s: str) -> int:
         if type(s) == str:
             i = int(s.replace(",", ""))
         elif s != s:
@@ -66,8 +65,8 @@ def parse_ints(df: pd.DataFrame, parallel: bool = True) -> pd.DataFrame:
         return i
 
     if parallel:
-        df["Handle Time (Hours)"] = apply_on_series_parallel(
-            df["Handle Time (Hours)"], rm_comma_to_int, n_cores=-1
+        df["Handle Time (Hours)"] = df["Handle Time (Hours)"].parallel_apply(
+            rm_comma_to_int
         )
     else:
         df["Handle Time (Hours)"] = df["Handle Time (Hours)"].apply(rm_comma_to_int)
@@ -79,6 +78,10 @@ def parse_timestamps(df: pd.DataFrame, parallel: bool = True) -> pd.DataFrame:
 
     # parse timestamp strings to unix timestamps (int) to save memory
     def datestr_to_unix(s: str) -> int:
+
+        # required for parallelization in Windows, all parallel functions should be self contained due to their multiprocessing system (spawn) :(
+        import datetime
+
         if type(s) != str:
             return s
         if (
@@ -98,17 +101,18 @@ def parse_timestamps(df: pd.DataFrame, parallel: bool = True) -> pd.DataFrame:
         "Close Time",
     ]
     if parallel:
-        df[date_cols_to_parse] = apply_on_df_parallel(
-            df[date_cols_to_parse], datestr_to_unix, n_cores=-1
+        df[date_cols_to_parse] = df[date_cols_to_parse].parallel_applymap(
+            datestr_to_unix
         )
     else:
         df[date_cols_to_parse] = df[date_cols_to_parse].applymap(datestr_to_unix)
     return df
 
 
-def do_all_preprocessing():
+def do_all_preprocessing() -> None:
     if os.path.exists(ORG_DATA_DIR):
         # import data
+        print(f"Importing data...")
         df = pd.read_csv(
             ORG_DATA_DIR,
             delimiter="\t",
@@ -116,28 +120,33 @@ def do_all_preprocessing():
             na_values=NAN_VALUES,
         )
 
-        # preprocess
+        # preprocess in parallel
+        pandarallel.initialize(verbose=0, progress_bar=False)
+        print(f"Converting string timestamps to unix timestamps...")
         df = parse_timestamps(df)
+
+        print(f"Parsing strings to integers...")
         df = parse_ints(df)
 
-        # <<< PURELY FOR TESTING PURPOSES
-        import numpy as np
+        # # <<< PURELY FOR TESTING PURPOSES
 
-        # single core preprocessing
-        dfs = pd.read_csv(
-            ORG_DATA_DIR,
-            delimiter="\t",
-            dtype=ALL_FEATURE_DTYPES,
-            na_values=NAN_VALUES,
-        )
-        dfs = parse_timestamps(dfs, parallel=False)
-        dfs = parse_ints(dfs, parallel=False)
-        assert np.allclose(
-            df.to_numpy(), dfs.to_numpy(), equal_nan=True
-        )  # if both are the same, nothing happens, else AssertionError is raised
-        # END OF TEST >>>
+        # # preprocess single threaded
+        # dfs = pd.read_csv(
+        #     ORG_DATA_DIR,
+        #     delimiter="\t",
+        #     dtype=ALL_FEATURE_DTYPES,
+        #     na_values=NAN_VALUES,
+        # )
+        # dfs = parse_timestamps(dfs, parallel=False)
+        # dfs = parse_ints(dfs, parallel=False)
+
+        # # if both are the same, nothing happens, else AssertionError is raised
+        # assert df.equals(dfs)
+
+        # # END OF TEST >>>
 
         # save/pickle
+        print(f"Pickling into '{PREP_DATA_DIR}'...")
         df.to_pickle(PREP_DATA_DIR)
     else:
         current_working_dir = os.getcwd().replace("\\", "/")
