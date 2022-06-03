@@ -1,3 +1,11 @@
+# local test files
+ltest*
+debug*.ipynb
+debug.ipynb
+
+# Pickle
+*.pkl
+
 # Mac shait
 .DS_Store
 

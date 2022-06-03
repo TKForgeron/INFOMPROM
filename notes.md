@@ -41,3 +41,16 @@ Chosen business questions:
 - choose 1:
 	1. How does time affect the process? (are there patterns in time, e.g., faster processing in weekends)
 	2. What are the bottlenecks in the process? 
+
+### Lecture May 25
+- ATS approach doesn't take in long term dependencies. So if, e.g., there is a correlation between {time it took to get from activity A to B} and {time remaining if you have just executed D}, this is not captured in the model/taken advantage of in the prediction. <-- could be stated in limitations section, or attempts could be done to tackle this.
+
+### Meeting May 26 Joel&Tim
+- UC1: add/update data while live/online
+- UC2: run prediction models
+- preprocessing:
+	- timestamps to unix-timestamps
+	- categorical to one-hot encoded
+- add features to ATS data
+	- amount of pingpongs
+	- remaining time
