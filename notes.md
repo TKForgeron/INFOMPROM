@@ -90,3 +90,13 @@ Chosen business questions:
 			- #incidents per team
 			- particularities about team: case category, priority
 			- performance per team
+- Prediction
+	0. Reader's Guide
+	1. Related Work
+	2. Methodology
+	3. Results
+- Conclusion
+- Discussion
+	0. Reader's Guide
+	1. Limitations
+	2. Future Work
