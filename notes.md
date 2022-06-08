@@ -60,16 +60,14 @@ Chosen business questions:
 	- Time Prediction
 		- BQ1: creating transparency (side effect: user/client satisfaction [client time management])
 		- BQ2: manage resources
-- Intro
+- Introduction
 	- Rabobank's problem, what part we are going to tackle
 - Problem Description
-	0. Reader's guide
 	1. Explain Rabo's ITIL process
 	2. Business problem
 	3. Our approach (what do we tackle, and how)
 	4. Why this approach (expected benefits)
 - Data
-	0. Reader's guide
 	1. High-level data description
 		- Percentages of priority categories
 	2. Data Preparation
@@ -91,12 +89,11 @@ Chosen business questions:
 			- particularities about team: case category, priority
 			- performance per team
 - Prediction
-	0. Reader's Guide
 	1. Related Work
 	2. Methodology
 	3. Results
 - Conclusion
 - Discussion
-	0. Reader's Guide
+	- Reader's Guide
 	1. Limitations
 	2. Future Work
