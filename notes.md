@@ -54,3 +54,39 @@ Chosen business questions:
 - add features to ATS data
 	- amount of pingpongs
 	- remaining time
+
+### Meeting June 8 (All)
+- Goal of the project:
+	- Time Prediction
+		- BQ1: creating transparency (side effect: user/client satisfaction [client time management])
+		- BQ2: manage resources
+- Intro
+	- Rabobank's problem, what part we are going to tackle
+- Problem Description
+	0. Reader's guide
+	1. Explain Rabo's ITIL process
+	2. Business problem
+	3. Our approach (what do we tackle, and how)
+	4. Why this approach (expected benefits)
+- Data
+	0. Reader's guide
+	1. High-level data description
+		- Percentages of priority categories
+	2. Data Preparation
+		- Describe filters:
+			- As we would lack a definition of 'complete' when using all cases, we only use cases that start with 'open' and end with 'close'.
+			- we do take in weekends (explain why)
+			- we do take in infrequent traces (explain why)
+	3. Limitations and Assumptions
+	4. BQ1
+		- Request for info (case category) stats, use for arguing importance of transparency (without our model its guestimating, with our model its more factual)
+		- MSE/MAE using Average Duration Prediction (without leveraging states)
+		- General boxplots of mean activities (per case) and mean duration (per case)
+		- Boxplots per prio/casetype
+	5. BQ2
+		- Graph of cases over time, with possible interpretations
+		- Heatmap of number of incidents during week per hour (x: day of week, y: hour of day, color: number of incidents)
+		- Team descriptions
+			- #incidents per team
+			- particularities about team: case category, priority
+			- performance per team
