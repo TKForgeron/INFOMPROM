@@ -56,10 +56,11 @@ Chosen business questions:
 	- remaining time
 
 ### Meeting June 8 (All)
-- Goal of the project:
+- **Goal of the project:**
 	- Time Prediction
 		- BQ1: creating transparency (side effect: user/client satisfaction [client time management])
 		- BQ2: manage resources
+
 - Introduction
 	- Rabobank's problem, what part we are going to tackle
 - Problem Description
