@@ -1,7 +1,7 @@
 ## To do:
 - Create BPMN models of the processes described in quick reference.
 
-## Ideas:
+### Ideas:
 - transform logs into images, then use CNNs for prediction, pattern/feature engineering, problem classification
 - use transfer learning
 - GRU for prediction
@@ -14,7 +14,7 @@ L* gives 3 possible avenues for results:
 
 As our goal for this project we pick <1/2/3>, since <argumentation>.
 
-## Questions:
+### Questions:
 What is actually changed and how is it changed?
 What is the throughput time for every activity?
 What does the spike in events represent?
@@ -63,11 +63,13 @@ Chosen business questions:
 - Introduction
 	- Rabobank's problem, what part we are going to tackle
 - Problem Description
+	- Reader's Guide
 	1. Explain Rabo's ITIL process
 	2. Business problem
 	3. Our approach (what do we tackle, and how)
 	4. Why this approach (expected benefits)
 - Data
+	- Reader's Guide
 	1. High-level data description
 		- Percentages of priority categories
 	2. Data Preparation
@@ -89,6 +91,7 @@ Chosen business questions:
 			- particularities about team: case category, priority
 			- performance per team
 - Prediction
+	- Reader's Guide
 	1. Related Work
 	2. Methodology
 	3. Results
