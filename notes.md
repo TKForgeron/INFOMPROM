@@ -1,7 +1,7 @@
 ## To do:
 - Create BPMN models of the processes described in quick reference.
 
-## Ideas:
+### Ideas:
 - transform logs into images, then use CNNs for prediction, pattern/feature engineering, problem classification
 - use transfer learning
 - GRU for prediction
@@ -14,22 +14,22 @@ L* gives 3 possible avenues for results:
 
 As our goal for this project we pick <1/2/3>, since <argumentation>.
 
-## Questions:
-What is actually changed and how is it changed?
-What is the throughput time for every activity?
-What does the spike in events represent?
-How much time does it take after a change to go back to a steady state?
-For every major business change, what does the descriptive statistics look like?
-How can we detect drifts from steady state A to B?
+### Questions:
+- What is actually changed and how is it changed?
+- What is the throughput time for every activity?
+- What does the spike in events represent?
+- How much time does it take after a change to go back to a steady state?
+- For every major business change, what does the descriptive statistics look like?
+- How can we detect drifts from steady state A to B?
 
 
 ### Meeting May 16
-How do the average steps to resolution change over time (for all sub categories)?
-What are the average business hours lost (per category, per impact value)?
-How can we build a regression model that given some predictor variables predicts {how long a case will take/whether a case will be reopened}?
-How can we predict time left using LTSs?
-How many incidents took place for SCs?
-What are the different versions of the incident management process (and stats about them)?
+- How do the average steps to resolution change over time (for all sub categories)?
+- What are the average business hours lost (per category, per impact value)?
+- How can we build a regression model that given some predictor variables predicts {how long a case will take/whether a case will be reopened}?
+- How can we predict time left using LTSs?
+- How many incidents took place for SCs?
+- What are the different versions of the incident management process (and stats about them)?
 
 
 Analyze handovers between teams
@@ -54,3 +54,50 @@ Chosen business questions:
 - add features to ATS data
 	- amount of pingpongs
 	- remaining time
+
+### Meeting June 8 (All)
+- **Goal of the project:**
+	- Time Prediction
+		- BQ1: creating transparency (side effect: user/client satisfaction [client time management])
+		- BQ2: manage resources
+
+- Introduction
+	- Rabobank's problem, what part we are going to tackle
+- Problem Description
+	- Reader's Guide
+	1. Explain Rabo's ITIL process
+	2. Business problem
+	3. Our approach (what do we tackle, and how)
+	4. Why this approach (expected benefits)
+- Data
+	- Reader's Guide
+	1. High-level data description
+		- Percentages of priority categories
+	2. Data Preparation
+		- Describe filters:
+			- As we would lack a definition of 'complete' when using all cases, we only use cases that start with 'open' and end with 'close'.
+			- we do take in weekends (explain why)
+			- we do take in infrequent traces (explain why)
+	3. Limitations and Assumptions
+	4. BQ1
+		- Request for info (case category) stats, use for arguing importance of transparency (without our model its guestimating, with our model its more factual)
+		- MSE/MAE using Average Duration Prediction (without leveraging states)
+		- General boxplots of mean activities (per case) and mean duration (per case)
+		- Boxplots per prio/casetype
+	5. BQ2
+		- Graph of cases over time, with possible interpretations
+		- Heatmap of number of incidents during week per hour (x: day of week, y: hour of day, color: number of incidents)
+		- Team descriptions
+			- #incidents per team
+			- particularities about team: case category, priority
+			- performance per team
+- Prediction
+	- Reader's Guide
+	1. Related Work
+	2. Methodology
+	3. Results
+- Conclusion
+- Discussion
+	- Reader's Guide
+	1. Limitations
+	2. Future Work

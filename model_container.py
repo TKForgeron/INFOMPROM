@@ -1,6 +1,7 @@
 import numpy as np
 from nptyping import NDArray, Bool, Shape
 from typing import Any
+import river
 
 
 class Model_container:
@@ -22,7 +23,9 @@ class Model_container:
 
         return model
 
-    def avg_predictor
+    def avg_predictor():
+        pass
+
 
 # class Data:
 
