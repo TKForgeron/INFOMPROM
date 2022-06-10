@@ -1,17 +1,20 @@
-from logging import raiseExceptions
-from debugpy import configure
-import pandas as pd
-
+# from logging import raiseExceptions
 # from nptyping import NDArray, Bool, Shape
+import warnings
+import pandas as pd
 from typing import Any
-from custom_models import Average, Minimum, Maximum, Sample_mean
+from custom_models import Average, Minimum, Maximum, Sample_mean, Median, Mode
 from sklearn.linear_model import LassoLarsCV, LinearRegression, ElasticNetCV
 from sklearn.ensemble import RandomForestRegressor
 
 
 class Bucket:
     def __init__(
-        self, data: pd.DataFrame, model_type: str = "avg", seed: int = 42, cv: int = 5
+        self,
+        data: pd.DataFrame = None,
+        model_type: str = "avg",
+        seed: int = 42,
+        cv: int = 5,
     ) -> None:
         """
         Initializes a Bucket.
@@ -42,41 +45,37 @@ class Bucket:
 
     def configure_model(self):
 
-        if self.model_type.upper() in ["AVG", "AVERAGE", "MEAN"]:
-            model = Average()
-        elif self.model_type.upper() in ["MIN", "MINIMUM"]:
-            model = Minimum()
-        elif self.model_type.upper() in [
-            "MAX",
-            "MAXIMUM",
-        ]:
-            model = Maximum()
-        elif self.model_type.upper() in [
-            "SAMPLE MEAN",
-            "SAMPLE_MEAN",
-            "SAMPLEMEAN",
-        ]:
+        if self.model_type.upper() == "SAMPLEMEAN":
             model = Sample_mean()
-        elif self.model_type.upper() in [
-            "LIN",
-            "LINEAR REGRESSION",
-            "LINREG",
-        ]:
+        elif self.model_type.upper() == "AVG":
+            model = Average()
+        elif self.model_type.upper() == "MIN":
+            model = Minimum()
+        elif self.model_type.upper() == "MAX":
+            model = Maximum()
+        elif self.model_type.upper() == "MEDIAN":
+            model = Median()
+        elif self.model_type.upper() == "MODE":
+            model = Mode()
+
+        elif self.model_type.upper() == "LINREG":
             model = LinearRegression()
+
         elif self.model_type.upper() in [
             "ELASTICNET",
             "ELASTICNETCV",
         ]:
             model = ElasticNetCV(cv=self.cv)
+
         elif self.model_type.upper() in ["LASSOLARSCV", "LASSOLARS"]:
             model = LassoLarsCV(cv=self.cv)
-        elif self.model_type.upper() in [
-            "RF",
-            "RANDOMFOREST",
-            "RANDOM FOREST",
-            "RANDOM_FOREST",
-        ]:
+
+        elif self.model_type.upper() == "RF":
             model = RandomForestRegressor(n_estimators=10, random_state=self.seed)
+
+        else:
+            warnings.warn("Model type unknown, we resort to using linear regression")
+            model = LinearRegression()
 
         return model
 
@@ -84,9 +83,10 @@ class Bucket:
         # transform self.data from list of dict to df
 
         if type(self.data) == pd.DataFrame:
-            raise Warning(
+            warnings.warn(
                 "You are trying to transform Bucket data to pd.DataFrame, but it is already a pd.DataFrame"
             )
+
         else:
             self.data = pd.DataFrame(self.data)
 
@@ -102,6 +102,7 @@ class Bucket:
     def finalize(self) -> None:
         self.transform_data()
         print("Data transformed to pd.DataFrame")
-
-        self.model.fit()
+        X = self.data.iloc[:, :-2]  # everything until remaining time
+        y = self.data.iloc[:, -2]  # remaining time
+        self.model.fit(X, y)
         print(f"{self.model_type} model fitted to bucketed training data")
