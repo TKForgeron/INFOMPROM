@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 import numpy as np
+from pandasql import sqldf
 
 FILENAME = "incidentProcess_custom.csv"
 
@@ -15,7 +16,9 @@ DATE_COLS = [
 AGG_COLS = [
     "conv_time",
     "rem_time",
-    "rem_act"
+    "rem_act",
+    "inc_cases",
+    "prev_events"
 ]
 
 
@@ -50,17 +53,49 @@ class InputData():
 
         self.df['RemainingActivities'] = self.df.groupby('Incident ID').cumcount(ascending=False)
 
+    def _add_prev_events(self) -> None:
+
+        print("Adding previous events attribute..")
+
+        self.df['PrevEvents'] = self.df['Activity'].apply(lambda x: [] if pd.isnull(x) else [x])
+        self.df['PrevEvents'] = self.df.groupby('Incident ID')['PrevEvents'].apply(lambda x: x.cumsum())
+
+    def _filter_incomplete_processes(self):
+        
+        print("Filtering out incomplete processes..")
+
+        df1 = self.df
+        q = """
+            select *
+            from df1 
+            where `Incident ID` in (  select `Incident ID`  
+                                    from df1
+                                    where Activity = 'Open')
+                                    AND `Incident ID` in
+                                    ( select`Incident ID` 
+                                    from df1
+                                    where Activity = 'Close')
+        """
+        self.df = sqldf(q)
+
 
     def apply_preprocessing(self, agg_cols: list, date_cols: list = None) -> None:
 
         print("\nSTART PREPROCESSING")
-                    
+        
+        
+        if 'prev_events' in agg_cols:
+            self._add_prev_events()
         if 'conv_time' in agg_cols:
+            if not date_cols:
+                raise AssertionError("ERROR: No columns for date conversions were given!")
             self._convert_times(date_cols)
         if 'rem_time' in agg_cols:
             self._add_remaining_time()
         if 'rem_act' in agg_cols:
             self._add_remaining_act()
+        if  'inc_cases' in agg_cols:
+            self._filter_incomplete_processes()
 
         print("FINISHED PREPROCESSING\n")
 
@@ -79,7 +114,10 @@ class InputData():
 
 if __name__ == "__main__":
 
-    data = InputData(FILENAME)
-    data.apply_preprocessing(AGG_COLS, DATE_COLS)
-    data.save_df()
+    input = InputData(FILENAME)
+    input.apply_preprocessing(AGG_COLS, DATE_COLS)
+    # input.filter_incomplete_processes()
+    input.save_df()
+
+
 
