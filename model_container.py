@@ -1,16 +1,25 @@
-import numpy as np
+import pandas as pd
 from nptyping import NDArray, Bool, Shape
 from typing import Any
 import river
 
 
-class Model_container:
+class Bucket:
     def __init__(
-        self, data: NDArray[Any, Any], model_type: str = "avg", seed: int = 42
+        self, data: pd.DataFrame, model_type: str = "avg", seed: int = 42
     ) -> None:
         self.data = data
         self.model_up_to_date = True
         self.model = self.init_model(model_type, seed)
+
+    def finalize() -> None:
+        # transform_data
+        # model.fit
+        pass
+
+    def transform_data() -> None:
+        # transform self.data from list of dict to df
+        pass
 
     def append_row(self, row: NDArray[Any, Any]) -> None:
         self.data = np.append(self.data, [row], axis=0)
