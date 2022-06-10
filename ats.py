@@ -1,5 +1,5 @@
+import sys
 import pandas as pd
-from typing import List
 from state import State
 
 
@@ -9,11 +9,16 @@ class ATS:
     # TODO: Make it annotated
     # TODO: predictive measures
 
-    def __init__(self, trace_id_col: str, act_col: str, representation: str) -> None:
+    def __init__(self, trace_id_col: str, act_col: str, representation: str = 'trace',
+                 horizon: int = sys.maxsize, filter_out: list = []) -> None:
 
         self.trace_id_col = trace_id_col
         self.act_col = act_col
+
         self.rep = representation
+        self.horizon = horizon
+        self.filter_out = filter_out
+
         empty_state = State(0, [], representation)
         self.states = [empty_state]
 
@@ -41,7 +46,37 @@ class ATS:
 
         return -1
 
-    def create_state(self, activities: List[str]):
+    def check_existing_states(self, activities: str, state_ids: list[str]) -> int:
+        """
+        This function checks whether there is a state that could be used
+        for the given trace. It will first look into the subsequent states before it will look 
+        in all existing states. Makes sure that no more states then necessary will be created.
+
+        Parameters
+        ----------
+            activities : [str]
+                Activities that, together, form a state.
+            state_ids : [int]
+                ids from subsequent states in the current state.
+
+        """
+
+        # TODO: we need to check whether it is faster to only check all states immediately
+        # Look into subsequent_states first for computational reasons
+        for id in state_ids:
+            if self.states[id].equals_state(activities):
+                return (id, False)
+
+        # for state in self.states:
+        for id, state in enumerate(self.states):
+            
+            if state.equals_state(activities):
+                print(f"found id: {id}")
+                return (id, True)
+
+        return (-1, True)
+
+    def create_state(self, activities: list[str]):
         """
         This function creates a new state object.
 
@@ -50,11 +85,6 @@ class ATS:
             activities : [str]
                 Activities that, together, form a state.
         """
-
-        if self.rep == "set":
-            activities = set(sorted(activities))
-        elif self.rep == "multiset":
-            activities = sorted(self.activities)
 
         state_id = len(self.states)
 
@@ -76,7 +106,23 @@ class ATS:
         print(f"act: {state.activities}")
         print("-------------------------------------\n")
 
-    def add_trace(self, trace: dict):
+    def transform_rep(self, act):
+
+        # filtering | TODO: we might want to do this for the trace once using pd.filter()
+        act = [x for x in act if x not in self.filter_out]
+
+        # horizon
+        act = act[-self.horizon:]
+
+        # representation
+        if self.rep == "set":
+            act = list(set(sorted(act)))
+        elif self.rep == "multiset":
+            act = sorted(act)
+
+        return act.copy()
+
+    def add_trace(self, trace: list[dict]):
         """
         This function, given a trace (i.e., events that belong to the same incident),
         creates all the required states.
@@ -86,22 +132,31 @@ class ATS:
             trace : [{}]
                 Events that belong to the same trace
         """
-
+        
         activities = []
 
         curr_state = self.states[0]
         curr_state.add_event(trace[0])
 
         for event in trace:
+
             activities.append(event[self.act_col])
 
-            next_state_id = self.check_subseq_states(
+
+            activities = self.transform_rep(activities.copy())
+
+            next_state_id, make_new_edge = self.check_existing_states(
                 activities, curr_state.subsequent_states
             )
 
-            # next state does not yet exist as subsequent state of current state
-            if next_state_id < 0:
-                state_id = self.create_state(activities.copy())
+            # next state does not yet exist
+            if make_new_edge:
+
+                if next_state_id < 0:
+                    state_id = self.create_state(activities.copy())
+                else:
+                    state_id = next_state_id
+                    
                 curr_state.add_subseq_state(
                     state_id
                 )  # <<<<<<<<<<werk je overal met inplace?>>>>>>>>>>
