@@ -1,16 +1,38 @@
 import pandas as pd
 from nptyping import NDArray, Bool, Shape
 from typing import Any
-import river
+from sklearn.linear_model import LassoLarsCV
 
 
 class Bucket:
     def __init__(
-        self, data: pd.DataFrame, model_type: str = "avg", seed: int = 42
+        self, data: pd.DataFrame, model_type: str = "avg", seed: int = 42, cv: int = 5
     ) -> None:
+        """
+        Initializes a Bucket.
+
+        Parameters
+        ----------
+            data : [pd.DataFrame]
+                A subset of a complete event log, filtered by states using
+                an Annotated Transition System.
+                At initialization (in an ATS node) this is a list of dictionaries.
+                When the ATS is fully constructed, this attribute will be transformed
+                to a pandas dataframe.
+            model_type : [str]
+                Machine learning model by which predictions will be made.
+            seed : [int]
+                Controls both the randomness that some models could have.
+            cv : [int]
+                Determines the number of folds used in the cross-validation process.
+
+        """
+
         self.data = data
         self.model_up_to_date = True
         self.model = self.init_model(model_type, seed)
+        self.seed = seed
+        self.cv = cv
 
     def finalize() -> None:
         # transform_data
@@ -28,7 +50,7 @@ class Bucket:
         if model_type == "avg":
             model = self.avg_predictor()
         elif model_type == "RF" or model_type == "rf":
-            model = river.ensemble.AdaptiveRandomForestRegressor(seed=seed)
+            model = LassoLarsCV(seed=seed)
 
         return model
 
