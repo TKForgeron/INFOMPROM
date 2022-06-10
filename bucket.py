@@ -1,7 +1,12 @@
+from logging import raiseExceptions
+from debugpy import configure
 import pandas as pd
-from nptyping import NDArray, Bool, Shape
+
+# from nptyping import NDArray, Bool, Shape
 from typing import Any
-from sklearn.linear_model import LassoLarsCV
+from custom_models import Average, Minimum, Maximum, Sample_mean
+from sklearn.linear_model import LassoLarsCV, LinearRegression, ElasticNetCV
+from sklearn.ensemble import RandomForestRegressor
 
 
 class Bucket:
@@ -30,63 +35,73 @@ class Bucket:
 
         self.data = data
         self.model_up_to_date = True
-        self.model = self.init_model(model_type, seed)
         self.seed = seed
         self.cv = cv
+        self.model_type = model_type
+        self.model = self.configure_model()
 
-    def finalize() -> None:
-        # transform_data
-        # model.fit
-        pass
+    def configure_model(self):
 
-    def transform_data() -> None:
-        # transform self.data from list of dict to df
-        pass
-
-    def append_row(self, row: NDArray[Any, Any]) -> None:
-        self.data = np.append(self.data, [row], axis=0)
-
-    def init_model(self, model_type, seed):
-        if model_type == "avg":
-            model = self.avg_predictor()
-        elif model_type == "RF" or model_type == "rf":
-            model = LassoLarsCV(seed=seed)
+        if self.model_type.upper() in ["AVG", "AVERAGE", "MEAN"]:
+            model = Average()
+        elif self.model_type.upper() in ["MIN", "MINIMUM"]:
+            model = Minimum()
+        elif self.model_type.upper() in [
+            "MAX",
+            "MAXIMUM",
+        ]:
+            model = Maximum()
+        elif self.model_type.upper() in [
+            "SAMPLE MEAN",
+            "SAMPLE_MEAN",
+            "SAMPLEMEAN",
+        ]:
+            model = Sample_mean()
+        elif self.model_type.upper() in [
+            "LIN",
+            "LINEAR REGRESSION",
+            "LINREG",
+        ]:
+            model = LinearRegression()
+        elif self.model_type.upper() in [
+            "ELASTICNET",
+            "ELASTICNETCV",
+        ]:
+            model = ElasticNetCV(cv=self.cv)
+        elif self.model_type.upper() in ["LASSOLARSCV", "LASSOLARS"]:
+            model = LassoLarsCV(cv=self.cv)
+        elif self.model_type.upper() in [
+            "RF",
+            "RANDOMFOREST",
+            "RANDOM FOREST",
+            "RANDOM_FOREST",
+        ]:
+            model = RandomForestRegressor(n_estimators=10, random_state=self.seed)
 
         return model
 
-    def avg_predictor():
-        pass
+    def transform_data(self) -> None:
+        # transform self.data from list of dict to df
 
+        if type(self.data) == pd.DataFrame:
+            raise Warning(
+                "You are trying to transform Bucket data to pd.DataFrame, but it is already a pd.DataFrame"
+            )
+        else:
+            self.data = pd.DataFrame(self.data)
 
-# class Data:
+    def append(self, row: dict) -> None:
 
-#     def _init_(self, prediction_type) -> None:
+        if type(row) == dict:
+            self.data.append(row)
+        else:
+            raise Exception(
+                "You are trying to append something else than a dict to a list of dict"
+            )
 
-#         self.numpy_array = []
-#         predict_col = 'x'
-#         agg_function = init_predictor()
+    def finalize(self) -> None:
+        self.transform_data()
+        print("Data transformed to pd.DataFrame")
 
-
-#     def init_predictor(prediction_type):
-
-#         if prediction_type = RF:
-
-#             return model
-
-#     def add_to_data():
-
-#         update_model
-
-
-#     def predict(self, row):
-
-#         self.agg_function.predict
-
-#     def calc_avg():
-
-
-# dict = {x: 1, y: 2 , z:3}
-
-# cols = dict.keys # = [x,y,z]
-
-# 'x' = 0
+        self.model.fit()
+        print(f"{self.model_type} model fitted to bucketed training data")
