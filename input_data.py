@@ -83,7 +83,8 @@ class InputData():
 
         print("\nSTART PREPROCESSING")
         
-        
+        if  'inc_cases' in agg_cols:
+            self._filter_incomplete_processes()
         if 'prev_events' in agg_cols:
             self._add_prev_events()
         if 'conv_time' in agg_cols:
@@ -94,8 +95,6 @@ class InputData():
             self._add_remaining_time()
         if 'rem_act' in agg_cols:
             self._add_remaining_act()
-        if  'inc_cases' in agg_cols:
-            self._filter_incomplete_processes()
 
         print("FINISHED PREPROCESSING\n")
 
