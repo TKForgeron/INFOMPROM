@@ -4,16 +4,15 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 
-
 # Press the green button in the gutter to run the script.
 from dataRetriever import DataRetriever
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     retriever = DataRetriever("incidentProcess_custom.csv")
 
-    event_log = retriever.create_event_log(case_col='Incident ID',
-                                           act_col='Activity',
-                                           time_col='ActivityTimeStamp')
+    event_log = retriever.create_event_log(
+        case_col="Incident ID", act_col="Activity", time_col="ActivityTimeStamp"
+    )
 
     retriever.create_diagram(event_log)
     retriever.get_dataHead()

@@ -30,7 +30,7 @@ class Bucket:
             model_type : [str]
                 Machine learning model by which predictions will be made.
             seed : [int]
-                Controls both the randomness that some models could have.
+                Controls the randomness that some models can have.
             cv : [int]
                 Determines the number of folds used in the cross-validation process.
 
@@ -38,40 +38,37 @@ class Bucket:
 
         self.data = data
         self.model_up_to_date = True
-        self.seed = seed
-        self.cv = cv
-        self.model_type = model_type
-        self.model = self.configure_model()
+        self.model = self.configure_model(model_type, cv, seed)
 
-    def configure_model(self):
+    def configure_model(model_type, cv, seed):
 
-        if self.model_type.upper() == "SAMPLEMEAN":
+        if model_type.upper() == "SAMPLEMEAN":
             model = Sample_mean()
-        elif self.model_type.upper() == "AVG":
+        elif model_type.upper() == "AVG":
             model = Average()
-        elif self.model_type.upper() == "MIN":
+        elif model_type.upper() == "MIN":
             model = Minimum()
-        elif self.model_type.upper() == "MAX":
+        elif model_type.upper() == "MAX":
             model = Maximum()
-        elif self.model_type.upper() == "MEDIAN":
+        elif model_type.upper() == "MEDIAN":
             model = Median()
-        elif self.model_type.upper() == "MODE":
+        elif model_type.upper() == "MODE":
             model = Mode()
 
-        elif self.model_type.upper() == "LINREG":
+        elif model_type.upper() == "LINREG":
             model = LinearRegression()
 
-        elif self.model_type.upper() in [
+        elif model_type.upper() in [
             "ELASTICNET",
             "ELASTICNETCV",
         ]:
-            model = ElasticNetCV(cv=self.cv)
+            model = ElasticNetCV(cv=cv)
 
-        elif self.model_type.upper() in ["LASSOLARSCV", "LASSOLARS"]:
-            model = LassoLarsCV(cv=self.cv)
+        elif model_type.upper() in ["LASSOLARSCV", "LASSOLARS"]:
+            model = LassoLarsCV(cv=cv)
 
-        elif self.model_type.upper() == "RF":
-            model = RandomForestRegressor(n_estimators=10, random_state=self.seed)
+        elif model_type.upper() == "RF":
+            model = RandomForestRegressor(n_estimators=10, random_state=seed)
 
         else:
             warnings.warn("Model type unknown, we resort to using linear regression")

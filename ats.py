@@ -9,8 +9,14 @@ class ATS:
     # TODO: Make it annotated
     # TODO: predictive measures
 
-    def __init__(self, trace_id_col: str, act_col: str, representation: str = 'trace',
-                 horizon: int = sys.maxsize, filter_out: list = []) -> None:
+    def __init__(
+        self,
+        trace_id_col: str,
+        act_col: str,
+        representation: str = "trace",
+        horizon: int = sys.maxsize,
+        filter_out: list = [],
+    ) -> None:
 
         self.trace_id_col = trace_id_col
         self.act_col = act_col
@@ -49,7 +55,7 @@ class ATS:
     def check_existing_states(self, activities: str, state_ids: list[str]) -> int:
         """
         This function checks whether there is a state that could be used
-        for the given trace. It will first look into the subsequent states before it will look 
+        for the given trace. It will first look into the subsequent states before it will look
         in all existing states. Makes sure that no more states then necessary will be created.
 
         Parameters
@@ -69,7 +75,7 @@ class ATS:
 
         # for state in self.states:
         for id, state in enumerate(self.states):
-            
+
             if state.equals_state(activities):
                 print(f"found id: {id}")
                 return (id, True)
@@ -112,7 +118,7 @@ class ATS:
         act = [x for x in act if x not in self.filter_out]
 
         # horizon
-        act = act[-self.horizon:]
+        act = act[-self.horizon :]
 
         # representation
         if self.rep == "set":
@@ -132,7 +138,7 @@ class ATS:
             trace : [{}]
                 Events that belong to the same trace
         """
-        
+
         activities = []
 
         curr_state = self.states[0]
@@ -141,7 +147,6 @@ class ATS:
         for event in trace:
 
             activities.append(event[self.act_col])
-
 
             activities = self.transform_rep(activities.copy())
 
@@ -156,7 +161,7 @@ class ATS:
                     state_id = self.create_state(activities.copy())
                 else:
                     state_id = next_state_id
-                    
+
                 curr_state.add_subseq_state(
                     state_id
                 )  # <<<<<<<<<<werk je overal met inplace?>>>>>>>>>>

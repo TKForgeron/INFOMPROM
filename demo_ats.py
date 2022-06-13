@@ -11,6 +11,3 @@ ats = ATS("Incident ID", "Activity", "trace", horizon=2)
 ats.create_ATS(data)
 print_ATS(ats)
 ats.print()
-
-
-
