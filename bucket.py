@@ -2,13 +2,17 @@
 # from nptyping import NDArray, Bool, Shape
 import warnings
 import pandas as pd
-from typing import Any
 from custom_models import Average, Minimum, Maximum, Sample_mean, Median, Mode
 from sklearn.linear_model import LassoLarsCV, LinearRegression, ElasticNetCV
 from sklearn.ensemble import RandomForestRegressor
 
 
 class Bucket:
+    # TODO predict moet per unfinished trace een prediction geven
+    # TODO check if append() works
+    # TODO fix sklearn models
+    # TODO integrate a scoring function (e.g. MAE, MSE, Cross Entropy)
+
     def __init__(
         self,
         data: pd.DataFrame = None,
@@ -37,10 +41,10 @@ class Bucket:
         """
 
         self.data = data
-        self.model_up_to_date = True
         self.model = self.configure_model(model_type, cv, seed)
+        # self.model_up_to_date = True
 
-    def configure_model(model_type, cv, seed):
+    def configure_model(self, model_type: str, cv: int, seed: int):
 
         if model_type.upper() == "SAMPLEMEAN":
             model = Sample_mean()
@@ -102,4 +106,4 @@ class Bucket:
         X = self.data.iloc[:, :-2]  # everything until remaining time
         y = self.data.iloc[:, -2]  # remaining time
         self.model.fit(X, y)
-        print(f"{self.model_type} model fitted to bucketed training data")
+        print(f"{self.model} model fitted to bucketed training data")
