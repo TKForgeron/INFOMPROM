@@ -1,9 +1,7 @@
-
-
 print("begin")
-li = [1,2,3,4,5,6,7,8,9]
-li = [1,2]
-print(len(li)-20)
+li = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+li = [1, 2]
+print(len(li) - 20)
 # out = [x for x in li if x not in filtered]
 out = li[-3:]
 print(out)
