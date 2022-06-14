@@ -34,6 +34,7 @@ ats.create_ATS(data_train)
 ats.print()
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ats.finalize()
 
 # print_ATS(ats)
@@ -47,6 +48,8 @@ for event in data_test.to_dict(orient="records"):
     if i == 5:
         break
     i +=1
+=======
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 =======
 >>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 =======

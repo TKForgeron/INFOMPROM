@@ -8,6 +8,7 @@ class ATS:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     def __init__(self, trace_id_col: str, act_col: str, y_col: str, representation: str = 'trace',
                  horizon: int = sys.maxsize, filter_out: list = [], prediction: str = 'avg') -> None:
 
@@ -15,6 +16,8 @@ class ATS:
 
         print("START CREATING ATS")
 =======
+=======
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 =======
 >>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
     def __init__(
@@ -26,6 +29,9 @@ class ATS:
         filter_out: list = [],
     ) -> None:
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
+=======
 >>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 =======
 >>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0

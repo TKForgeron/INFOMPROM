@@ -1,11 +1,14 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 class State:
 
     def __init__(self, id, activities, representation, y_col, prediction='avg') -> None:
 =======
+=======
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 =======
 >>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 from decimal import ROUND_DOWN
@@ -38,7 +41,10 @@ class State:
         pass
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     
+=======
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 =======
 >>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 =======
@@ -51,6 +57,7 @@ class State:
     def equals_state(self, activities):
 
         return self.activities == activities
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     
@@ -78,6 +85,8 @@ class State:
 =======
 =======
 >>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
+=======
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 
         # if self.rep == 'trace':
         #     return self.activities == activities
@@ -86,6 +95,9 @@ class State:
         # elif self.rep == 'multiset':
         #     return sorted(activities) == self.activities
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
+=======
 >>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 =======
 >>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
