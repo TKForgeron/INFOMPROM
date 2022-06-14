@@ -6,18 +6,12 @@ debug.ipynb
 # Pickle
 *.pkl
 
-<<<<<<< HEAD
 # csv 
 *.csv
 
 
 data/
 
-=======
-# csv
-*.csv
-
->>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 # Mac shait
 .DS_Store
 *.DS_Store
