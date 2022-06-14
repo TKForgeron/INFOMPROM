@@ -1,11 +1,21 @@
-
-
 print("begin")
+<<<<<<< HEAD
+<<<<<<< HEAD
 li = [1,2,3,4,5,6,7,8,9]
-li = [1,2]
+# li = [1,2]
 print(len(li)-20)
+=======
+li = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+li = [1, 2]
+print(len(li) - 20)
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
+=======
+li = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+li = [1, 2]
+print(len(li) - 20)
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 # out = [x for x in li if x not in filtered]
-out = li[-3:]
+out = li[:9]
 print(out)
 
 print("end")

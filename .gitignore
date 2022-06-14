@@ -6,6 +6,12 @@ debug.ipynb
 # Pickle
 *.pkl
 
+# csv 
+*.csv
+
+
+data/
+
 # Mac shait
 .DS_Store
 *.DS_Store
@@ -76,9 +82,6 @@ db.sqlite3-journal
 # Flask stuff:
 instance/
 .webassets-cache
-
-# csv
-*.csv
 
 # Scrapy stuff:
 .scrapy

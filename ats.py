@@ -1,16 +1,34 @@
 import sys
 import pandas as pd
 from state import State
-
+from helper import printProgressBar
 
 class ATS:
 
-    # TODO: Make it work for set and multiset configuration
-    # TODO: Make it annotated
-    # TODO: predictive measures
 
-    def __init__(self, trace_id_col: str, act_col: str, representation: str = 'trace',
-                 horizon: int = sys.maxsize, filter_out: list = []) -> None:
+<<<<<<< HEAD
+<<<<<<< HEAD
+    def __init__(self, trace_id_col: str, act_col: str, y_col: str, representation: str = 'trace',
+                 horizon: int = sys.maxsize, filter_out: list = [], prediction: str = 'avg') -> None:
+
+
+
+        print("START CREATING ATS")
+=======
+=======
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
+    def __init__(
+        self,
+        trace_id_col: str,
+        act_col: str,
+        representation: str = "trace",
+        horizon: int = sys.maxsize,
+        filter_out: list = [],
+    ) -> None:
+<<<<<<< HEAD
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
+=======
+>>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 
         self.trace_id_col = trace_id_col
         self.act_col = act_col
@@ -19,7 +37,10 @@ class ATS:
         self.horizon = horizon
         self.filter_out = filter_out
 
-        empty_state = State(0, [], representation)
+        self.prediction = prediction
+        self.y_col = y_col
+
+        empty_state = State(0, [], representation, y_col, prediction)
         self.states = [empty_state]
 
     def check_subseq_states(self, activities: str, state_ids: int) -> int:
@@ -49,7 +70,7 @@ class ATS:
     def check_existing_states(self, activities: str, state_ids: list[str]) -> int:
         """
         This function checks whether there is a state that could be used
-        for the given trace. It will first look into the subsequent states before it will look 
+        for the given trace. It will first look into the subsequent states before it will look
         in all existing states. Makes sure that no more states then necessary will be created.
 
         Parameters
@@ -69,14 +90,13 @@ class ATS:
 
         # for state in self.states:
         for id, state in enumerate(self.states):
-            
+
             if state.equals_state(activities):
-                print(f"found id: {id}")
                 return (id, True)
 
         return (-1, True)
 
-    def create_state(self, activities: list[str]):
+    def create_state(self, activities: list[str]) -> int:
         """
         This function creates a new state object.
 
@@ -84,45 +104,38 @@ class ATS:
         ----------
             activities : [str]
                 Activities that, together, form a state.
+
+        Returns
+        ----------
+
+            state_id : int
+                Id of the created state
         """
 
         state_id = len(self.states)
-
-        self.states.append(State(state_id, activities, self.rep))
+        self.states.append(State(state_id, activities, self.rep, self.y_col, self.prediction))
 
         return state_id
 
-    def print_state(self, state):
-        """
-        Small debugging function that prints the details of a state.
 
-        Parameters
-        ----------
-            state : State()
-                State object
-        """
-
-        print(f"id: {state.id}")
-        print(f"act: {state.activities}")
-        print("-------------------------------------\n")
-
-    def transform_rep(self, act):
+    def transform_rep(self, act: list[str]) -> list[str]:
 
         # filtering | TODO: we might want to do this for the trace once using pd.filter()
         act = [x for x in act if x not in self.filter_out]
 
         # horizon
-        act = act[-self.horizon:]
+        act = act[-self.horizon :]
 
         # representation
         if self.rep == "set":
-            act = list(set(sorted(act)))
+            act = sorted(list(set(act)))
         elif self.rep == "multiset":
             act = sorted(act)
-
+        
         return act.copy()
 
-    def add_trace(self, trace: list[dict]):
+
+    def add_trace(self, trace: list[dict]) -> None:
         """
         This function, given a trace (i.e., events that belong to the same incident),
         creates all the required states.
@@ -132,7 +145,7 @@ class ATS:
             trace : [{}]
                 Events that belong to the same trace
         """
-        
+
         activities = []
 
         curr_state = self.states[0]
@@ -141,7 +154,6 @@ class ATS:
         for event in trace:
 
             activities.append(event[self.act_col])
-
 
             activities = self.transform_rep(activities.copy())
 
@@ -156,7 +168,7 @@ class ATS:
                     state_id = self.create_state(activities.copy())
                 else:
                     state_id = next_state_id
-                    
+
                 curr_state.add_subseq_state(
                     state_id
                 )  # <<<<<<<<<<werk je overal met inplace?>>>>>>>>>>
@@ -165,7 +177,8 @@ class ATS:
 
             curr_state.add_event(event)
 
-    def create_ATS(self, df: pd.DataFrame):
+
+    def create_ATS(self, df: pd.DataFrame) -> None:
         """
         Main function that creates the ATS given an event log.
 
@@ -177,10 +190,18 @@ class ATS:
 
         grouped = df.groupby(self.trace_id_col)
 
+        length = len(grouped)
+        i = 0
+
+        printProgressBar(0, length, prefix = 'Create:', suffix = 'Complete', length = 50)
         for name, group in grouped:
             self.add_trace(group.to_dict("records"))
 
-    def print(self):
+            printProgressBar(i + 1, length, prefix = 'Create:', suffix = 'Complete', length = 50)
+            i+=1
+
+
+    def print(self) -> None:
         """
 
         Function that prints the (Annotated) Transition System to
@@ -190,12 +211,16 @@ class ATS:
 
         with open("data/ATS_output.txt", "w") as text_file:
 
-            for state in self.states:
 
+            printProgressBar(0, len(self.states), prefix = 'Print:', suffix = 'Complete', length = 50)
+
+            for i, state in enumerate(self.states):
+                
+                printProgressBar(i, len(self.states), prefix = 'Print:', suffix = 'Complete', length = 50)
                 print(f"id: {state.id}", file=text_file)
                 print(f"activities: {state.activities}", file=text_file)
 
-                print(f"subseq: {state.subsequent_states}", file=text_file)
+                print(f"Subseq: {state.subsequent_states}", file=text_file)
 
                 print("Data:", file=text_file)
 
@@ -204,3 +229,89 @@ class ATS:
                     print(row, file=text_file)
 
                 print("\n--------------------------------------\n", file=text_file)
+        
+            
+    def traverse_ats(self, event: dict) -> None:
+
+        """
+
+        Function that traverses the ats to find the bucket that must
+        be used for predicting the given event.
+
+
+        Parameters
+        ----------
+            event : dict
+                A single event
+
+        Returns
+        ----------
+
+            y : float
+                Predicted value
+
+        """
+
+        search_term = []
+        state = self.states[0]
+        state_id = 0 
+
+        # print("\n--------------------------------")
+        # print(f"ID: {event['Incident ID']} acts: {event['PrevEvents']}")
+
+        for l in range(1, len(event["PrevEvents"])+1):
+            
+            sub_seq = state.subsequent_states
+            
+            search_term = event["PrevEvents"][:l]
+            search_term = self.transform_rep(search_term)
+            # print(f"o- ST: {search_term}  ")
+
+            next_state = 0
+
+            for s in sub_seq:
+                # print(f"--- RESEARCH state {s}: {self.states[s].activities}")
+                if self.states[s].activities == search_term:
+                    state = self.states[s]
+                    state_id = s
+                    next_state = 1
+                    break
+            
+            # if next_state == 0:
+            #     print(f"NOTHING FOUND. Finished with state {state_id}")
+            # else:
+            #     print(f"NEXT -> ID: {state_id} | SA: {state.activities}")   
+
+
+            if event["PrevEvents"] == state.activities or next_state == 0:
+                # print(f"(OPTIMAL) STATE {state_id} FOR PREDICTION FOUND!")
+                
+                return state.predict(event)
+        
+        return state.predict(event)
+
+    
+    def finalize(self) -> None:
+        """
+        This function finalizes the ATS such that can work as
+        a prediction model.
+
+        """
+
+        printProgressBar(0, len(self.states), prefix = 'Finalize:', suffix = 'Complete', length = 50)
+
+        for i, state in enumerate(self.states):
+            
+            printProgressBar(i, len(self.states), prefix = 'Finalize:', suffix = 'Complete', length = 50)
+            state.finalize()
+                
+            
+
+
+
+
+
+
+
+
+
