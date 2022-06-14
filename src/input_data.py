@@ -81,18 +81,8 @@ class InputData:
         """
         self.df = sqldf(q)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 
     def apply_preprocessing(self, agg_cols: list = AGG_COLS, date_cols: list = DATE_COLS) -> None:
-=======
-=======
->>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
-=======
->>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
-    def apply_preprocessing(self, agg_cols: list, date_cols: list = None) -> None:
->>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
 
         print("\nSTART PREPROCESSING")
 

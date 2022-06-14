@@ -1,8 +1,8 @@
-from ats import *
+from src.ats import *
 import pandas as pd
 import numpy as np
-from print_ats import *
-from input_data import InputData
+from src.print_ats import *
+from src.input_data import InputData
 import ast
 
 FILENAME = "incidentProcess_custom.csv"
@@ -32,9 +32,6 @@ data_test = data[data["Incident ID"].isin(["IM0000042"])]
 ats = ATS("Incident ID", "Activity", "RemainingTime", "set")
 ats.create_ATS(data_train)
 ats.print()
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 ats.finalize()
 
 # print_ATS(ats)
@@ -48,9 +45,3 @@ for event in data_test.to_dict(orient="records"):
     if i == 5:
         break
     i +=1
-=======
->>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
-=======
->>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
-=======
->>>>>>> ed9eb8b14fa5cf882e64d0ca9c3c7ff119ed63b0
