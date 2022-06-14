@@ -182,7 +182,8 @@ class ATS:
 
             printProgressBar(i + 1, length, prefix = 'Create:', suffix = 'Complete', length = 50)
             i+=1
-
+            
+        print("\n")
 
     def print(self) -> None:
         """
@@ -212,6 +213,8 @@ class ATS:
                     print(row, file=text_file)
 
                 print("\n--------------------------------------\n", file=text_file)
+        
+        print("\n") # some weird bug in the progress
         
             
     def traverse_ats(self, event: dict) -> None:
@@ -288,7 +291,7 @@ class ATS:
             printProgressBar(i, len(self.states), prefix = 'Finalize:', suffix = 'Complete', length = 50)
             state.finalize()
                 
-            
+        print("\n")  
 
 
 
