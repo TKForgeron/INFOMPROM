@@ -3,13 +3,18 @@ import pandas as pd
 from src.state import State
 from src.helper import printProgressBar
 
+
 class ATS:
-
-
-    def __init__(self, trace_id_col: str, act_col: str, y_col: str, representation: str = 'trace',
-                 horizon: int = sys.maxsize, filter_out: list = [], prediction: str = 'avg') -> None:
-
-
+    def __init__(
+        self,
+        trace_id_col: str,
+        act_col: str,
+        y_col: str,
+        representation: str = "trace",
+        horizon: int = sys.maxsize,
+        filter_out: list = [],
+        prediction: str = "avg",
+    ) -> None:
 
         print("START CREATING ATS")
 
@@ -96,10 +101,11 @@ class ATS:
         """
 
         state_id = len(self.states)
-        self.states.append(State(state_id, activities, self.rep, self.y_col, self.prediction))
+        self.states.append(
+            State(state_id, activities, self.rep, self.y_col, self.prediction)
+        )
 
         return state_id
-
 
     def transform_rep(self, act: list[str]) -> list[str]:
 
@@ -114,9 +120,8 @@ class ATS:
             act = sorted(list(set(act)))
         elif self.rep == "multiset":
             act = sorted(act)
-        
-        return act.copy()
 
+        return act.copy()
 
     def add_trace(self, trace: list[dict]) -> None:
         """
@@ -160,7 +165,6 @@ class ATS:
 
             curr_state.add_event(event)
 
-
     def create_ATS(self, df: pd.DataFrame) -> None:
         """
         Main function that creates the ATS given an event log.
@@ -176,13 +180,15 @@ class ATS:
         length = len(grouped)
         i = 0
 
-        printProgressBar(0, length, prefix = 'Create:', suffix = 'Complete', length = 50)
+        printProgressBar(0, length, prefix="Create:", suffix="Complete", length=50)
         for name, group in grouped:
             self.add_trace(group.to_dict("records"))
 
-            printProgressBar(i + 1, length, prefix = 'Create:', suffix = 'Complete', length = 50)
-            i+=1
-            
+            printProgressBar(
+                i + 1, length, prefix="Create:", suffix="Complete", length=50
+            )
+            i += 1
+
         print("\n")
 
     def print(self) -> None:
@@ -195,12 +201,15 @@ class ATS:
 
         with open("data/ATS_output.txt", "w") as text_file:
 
-
-            printProgressBar(0, len(self.states), prefix = 'Print:', suffix = 'Complete', length = 50)
+            printProgressBar(
+                0, len(self.states), prefix="Print:", suffix="Complete", length=50
+            )
 
             for i, state in enumerate(self.states):
-                
-                printProgressBar(i, len(self.states), prefix = 'Print:', suffix = 'Complete', length = 50)
+
+                printProgressBar(
+                    i, len(self.states), prefix="Print:", suffix="Complete", length=50
+                )
                 print(f"id: {state.id}", file=text_file)
                 print(f"activities: {state.activities}", file=text_file)
 
@@ -213,10 +222,9 @@ class ATS:
                     print(row, file=text_file)
 
                 print("\n--------------------------------------\n", file=text_file)
-        
-        print("\n") # some weird bug in the progress
-        
-            
+
+        print("\n")  # some weird bug in the progress
+
     def traverse_ats(self, event: dict) -> None:
 
         """
@@ -240,15 +248,15 @@ class ATS:
 
         search_term = []
         state = self.states[0]
-        state_id = 0 
+        state_id = 0
 
         # print("\n--------------------------------")
         # print(f"ID: {event['Incident ID']} acts: {event['PrevEvents']}")
 
-        for l in range(1, len(event["PrevEvents"])+1):
-            
+        for l in range(1, len(event["PrevEvents"]) + 1):
+
             sub_seq = state.subsequent_states
-            
+
             search_term = event["PrevEvents"][:l]
             search_term = self.transform_rep(search_term)
             # print(f"o- ST: {search_term}  ")
@@ -262,21 +270,19 @@ class ATS:
                     state_id = s
                     next_state = 1
                     break
-            
+
             # if next_state == 0:
             #     print(f"NOTHING FOUND. Finished with state {state_id}")
             # else:
-            #     print(f"NEXT -> ID: {state_id} | SA: {state.activities}")   
-
+            #     print(f"NEXT -> ID: {state_id} | SA: {state.activities}")
 
             if event["PrevEvents"] == state.activities or next_state == 0:
                 # print(f"(OPTIMAL) STATE {state_id} FOR PREDICTION FOUND!")
-                
+
                 return state.predict(event)
-        
+
         return state.predict(event)
 
-    
     def finalize(self) -> None:
         """
         This function finalizes the ATS such that can work as
@@ -284,20 +290,15 @@ class ATS:
 
         """
 
-        printProgressBar(0, len(self.states), prefix = 'Finalize:', suffix = 'Complete', length = 50)
+        printProgressBar(
+            0, len(self.states), prefix="Finalize:", suffix="Complete", length=50
+        )
 
         for i, state in enumerate(self.states):
-            
-            printProgressBar(i, len(self.states), prefix = 'Finalize:', suffix = 'Complete', length = 50)
+
+            printProgressBar(
+                i, len(self.states), prefix="Finalize:", suffix="Complete", length=50
+            )
             state.finalize()
-                
-        print("\n")  
 
-
-
-
-
-
-
-
-
+        print("\n")

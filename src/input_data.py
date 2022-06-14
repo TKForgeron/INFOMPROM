@@ -81,8 +81,9 @@ class InputData:
         """
         self.df = sqldf(q)
 
-
-    def apply_preprocessing(self, agg_cols: list = AGG_COLS, date_cols: list = DATE_COLS) -> None:
+    def apply_preprocessing(
+        self, agg_cols: list = AGG_COLS, date_cols: list = DATE_COLS
+    ) -> None:
 
         print("\nSTART PREPROCESSING")
 
