@@ -8,13 +8,15 @@ from sklearn.ensemble import RandomForestRegressor
 
 
 class Bucket:
+    # TODO fix sklearn models
     # TODO predict moet per unfinished trace een prediction geven
     # TODO check if append() works
-    # TODO fix sklearn models
     # TODO integrate a scoring function (e.g. MAE, MSE, Cross Entropy)
+    # TODO train val split
 
     def __init__(
         self,
+        y_col: str,
         data: pd.DataFrame = None,
         model_type: str = "avg",
         seed: int = 42,
@@ -31,8 +33,8 @@ class Bucket:
                 At initialization (in an ATS node) this is a list of dictionaries.
                 When the ATS is fully constructed, this attribute will be transformed
                 to a pandas dataframe.
-            model_type : [str]
-                Machine learning model by which predictions will be made.
+            y : [str]
+                Column name of the target variable.
             seed : [int]
                 Controls the randomness that some models can have.
             cv : [int]
@@ -41,6 +43,7 @@ class Bucket:
         """
 
         self.data = data
+        self.y = y_col
         self.model = self.configure_model(model_type, cv, seed)
         # self.model_up_to_date = True
 
@@ -90,6 +93,7 @@ class Bucket:
 
         else:
             self.data = pd.DataFrame(self.data)
+            self.data = self.data.iloc[:, :-1]
 
     def append(self, row: dict) -> None:
 
@@ -100,10 +104,19 @@ class Bucket:
                 "You are trying to append something else than a dict to a list of dict"
             )
 
+    def encode(self) -> None:
+        # for now, remove all non-numerical cols
+        # cumulated sum OHE
+        pass
+
+    def predict(self, pred_x) -> None:
+        return self.model.predict(pred_x)[0]
+
     def finalize(self) -> None:
         self.transform_data()
         print("Data transformed to pd.DataFrame")
-        X = self.data.iloc[:, :-2]  # everything until remaining time
-        y = self.data.iloc[:, -2]  # remaining time
+        self.encode()
+        X = self.data.drop([self.y], axis=1)  # everything until remaining time
+        y = self.data.loc[self.y]  # remaining time
         self.model.fit(X, y)
         print(f"{self.model} model fitted to bucketed training data")
