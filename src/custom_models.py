@@ -7,6 +7,7 @@ class AalstModel:
         self,
     ) -> None:
         self.prediction = None
+        self.is_custom_model = True
 
     def __str__(self):
         return "AalstModel()"

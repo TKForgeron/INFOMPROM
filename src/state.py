@@ -1,7 +1,21 @@
+from src.bucket import Bucket
+from src.bucket_preprocessor import Preprocessor
+
+
 class State:
-    def __init__(self, id, activities, representation, y_col, prediction="avg") -> None:
+    def __init__(
+        self,
+        id,
+        activities: list[str],
+        representation: str,
+        y_col: str,
+        encoding_operation: str = None,
+        model_type: str = None,
+        seed: int = None,
+        cv: int = None,
+    ) -> None:
         """
-        Constructs a new state object.
+        Constructs a new State object.
 
         Parameters
         ----------
@@ -12,16 +26,13 @@ class State:
         self.activities = activities
         self.rep = representation
         self.id = id
-
-        self.data = (
-            []
-        )  # must be replaced by the bucket | y_col and prediction can be used for init
+        self.bucket = Bucket(y_col, [], encoding_operation, model_type, seed, cv)
         self.subsequent_states = []
 
-    def add_event(self, row):
+    def add_event(self, row: dict):
 
-        self.data.append(row)
-        pass
+        self.bucket.append(row)
+        # pass
 
     def add_subseq_state(self, state_id):
 
@@ -31,15 +42,25 @@ class State:
 
         return self.activities == activities
 
-    def predict(self, event):
+    def predict(self, event) -> float:
 
-        print(
-            f"PREDICT -> INCIDENT: {event['Incident ID']} in STATE ID: {self.id}\n-- PE: {event['PrevEvents']}"
+        pp = Preprocessor(
+            self.bucket.preprocessor.y_col, self.bucket.preprocessor.encoding_operation
         )
+        event = pp.prepare_for_prediction(event, self.bucket.x_cols)
 
-        return 1  # placeholder value
+        print(f"Predicting remaining time using {self.bucket.model} model...")
+        y_pred = self.bucket.predict_one(event)
+
+        return y_pred
+        # print(
+        #     f"PREDICT -> INCIDENT: {event['Incident ID']} in STATE ID: {self.id}\n-- PE: {event['PrevEvents']}"
+        # )
+
+        # return 1  # placeholder value
 
     def finalize(self):
 
-        pass
+        self.bucket.finalize()
+        # pass
         # print(f"Some method that prepares the state {self.id} bucket for prediction")

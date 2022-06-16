@@ -2,6 +2,7 @@
 ltest*
 debug*.ipynb
 debug.ipynb
+debug*.py
 
 # Pickle
 *.pkl

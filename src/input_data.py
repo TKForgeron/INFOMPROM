@@ -109,10 +109,10 @@ class InputData:
         print("Saving df..")
 
         if file == "csv":
-            self.df.to_csv("data/" + name + ".csv")
+            self.df.to_csv(f"data/{name}.csv")
 
         elif file == "pickle":
-            self.df.to_pickle("data" + name + "pkl")
+            self.df.to_pickle(f"data/{name}.pkl")
 
 
 if __name__ == "__main__":

@@ -13,7 +13,10 @@ class ATS:
         representation: str = "trace",
         horizon: int = sys.maxsize,
         filter_out: list = [],
-        prediction: str = "avg",
+        encoding_operation: str = None,
+        model_type: str = None,
+        seed: int = 42,
+        cv: int = 5,
     ) -> None:
 
         print("START CREATING ATS")
@@ -25,10 +28,12 @@ class ATS:
         self.horizon = horizon
         self.filter_out = filter_out
 
-        self.prediction = prediction
+        self.model_type = model_type
         self.y_col = y_col
 
-        empty_state = State(0, [], representation, y_col, prediction)
+        empty_state = State(
+            0, [], representation, y_col, encoding_operation, model_type, seed, cv
+        )
         self.states = [empty_state]
 
     def check_subseq_states(self, activities: str, state_ids: int) -> int:
@@ -102,7 +107,7 @@ class ATS:
 
         state_id = len(self.states)
         self.states.append(
-            State(state_id, activities, self.rep, self.y_col, self.prediction)
+            State(state_id, activities, self.rep, self.y_col, self.model_type)
         )
 
         return state_id
@@ -225,7 +230,7 @@ class ATS:
 
         print("\n")  # some weird bug in the progress
 
-    def traverse_ats(self, event: dict) -> None:
+    def traverse_ats(self, event: dict) -> float:
 
         """
 
