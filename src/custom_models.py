@@ -2,44 +2,14 @@ import warnings
 import pandas as pd
 
 
-class Sample_mean:
-    def __init__(self) -> None:
-        pass
-
-    def fit():
-        """
-        Fit sample mean predicting model.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
-            Training data.
-        y : array-like of shape (n_samples,) or (n_samples, n_targets)
-            Target values. Will be cast to X's dtype if necessary.
-
-        Returns
-        -------
-        self : object
-            Fitted Estimator.
-        """
-        pass
-
-    def train(self):
-        self.fit()
-
-    def predict():
-        warnings.warn("Sample mean not yet implemented")
-        pass
-
-
-class Average:
+class AalstModel:
     def __init__(
         self,
     ) -> None:
         self.prediction = None
 
     def __str__(self):
-        return "Average()"
+        return "AalstModel()"
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
         """
@@ -62,154 +32,103 @@ class Average:
 
         return self
 
-    def train(self):
-        return self.fit()
-
     def predict(self, X: pd.DataFrame):
-        if not self.prediction:
+        if self.prediction is None:
             warnings.warn("Model has not been fitted yet")
         return [self.prediction] * X.shape[0]
 
 
-class Minimum:
+class Average(AalstModel):
     def __init__(
         self,
     ) -> None:
-        self.prediction = None
+        super().__init__()
+
+    def __str__(self):
+        return "Average()"
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
-        """
-        Fit average predicting model.
 
-        Parameters
-        ----------
-        X : pd.DataFrame of shape (n_samples, n_features)
-            Training data.
-        y : pd.Series of shape (n_samples,) or (n_samples, n_targets)
-            Target values. Will be cast to X's dtype if necessary.
+        self.prediction = y.mean()
 
-        Returns
-        -------
-        self : object
-            Fitted Estimator.
-        """
+        return self
+
+
+class Minimum(AalstModel):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__()
+
+    def __str__(self):
+        return "Minimum()"
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
 
         self.prediction = y.min()
 
         return self
 
-    def train(self):
-        return self.fit()
 
-    def predict(self, X: pd.DataFrame):
-        if not self.prediction:
-            warnings.warn("Model has not been fitted yet")
-        return [self.prediction] * X.shape[0]
-
-
-class Maximum:
+class Maximum(AalstModel):
     def __init__(
         self,
     ) -> None:
-        self.prediction = None
+        super().__init__()
+
+    def __str__(self):
+        return "Maximum()"
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
-        """
-        Fit average predicting model.
-
-        Parameters
-        ----------
-        X : pd.DataFrame of shape (n_samples, n_features)
-            Training data.
-        y : pd.Series of shape (n_samples,) or (n_samples, n_targets)
-            Target values. Will be cast to X's dtype if necessary.
-
-        Returns
-        -------
-        self : object
-            Fitted Estimator.
-        """
 
         self.prediction = y.max()
 
         return self
 
-    def train(self):
-        return self.fit()
 
-    def predict(self, X: pd.DataFrame):
-        if not self.prediction:
-            warnings.warn("Model has not been fitted yet")
-        return [self.prediction] * X.shape[0]
-
-
-class Median:
+class Median(AalstModel):
     def __init__(
         self,
     ) -> None:
-        self.prediction = None
+        super().__init__()
+
+    def __str__(self):
+        return "Median()"
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
-        """
-        Fit average predicting model.
-
-        Parameters
-        ----------
-        X : pd.DataFrame of shape (n_samples, n_features)
-            Training data.
-        y : pd.Series of shape (n_samples,) or (n_samples, n_targets)
-            Target values. Will be cast to X's dtype if necessary.
-
-        Returns
-        -------
-        self : object
-            Fitted Estimator.
-        """
 
         self.prediction = y.median()
 
         return self
 
-    def train(self):
-        return self.fit()
 
-    def predict(self, X: pd.DataFrame):
-        if not self.prediction:
-            warnings.warn("Model has not been fitted yet")
-        return [self.prediction] * X.shape[0]
-
-
-class Mode:
+class Mode(AalstModel):
     def __init__(
         self,
     ) -> None:
         self.prediction = None
 
+    def __str__(self):
+        return "Mode()"
+
     def fit(self, X: pd.DataFrame, y: pd.Series):
-        """
-        Fit average predicting model.
-
-        Parameters
-        ----------
-        X : pd.DataFrame of shape (n_samples, n_features)
-            Training data.
-        y : pd.Series of shape (n_samples,) or (n_samples, n_targets)
-            Target values. Will be cast to X's dtype if necessary.
-
-        Returns
-        -------
-        self : object
-            Fitted Estimator.
-        """
 
         self.prediction = y.mode()
+        if self.prediction.size > 1:
+            self.prediction = self.prediction[-1]
+        else:
+            self.prediction = self.prediction[0]
 
         return self
 
-    def train(self):
-        return self.fit()
 
-    def predict(self, X: pd.DataFrame):
-        if not self.prediction:
-            warnings.warn("Model has not been fitted yet")
-        return [self.prediction] * X.shape[0]
+class SampleMean(AalstModel):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def __str__(self):
+        return "SampleMean()"
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        pass
+        # return self

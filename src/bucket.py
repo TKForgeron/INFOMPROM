@@ -2,9 +2,15 @@
 # from nptyping import NDArray, Bool, Shape
 import warnings
 import pandas as pd
-from src.custom_models import Average, Minimum, Maximum, Sample_mean, Median, Mode
-from sklearn.linear_model import LassoLarsCV, LinearRegression, ElasticNetCV
-from sklearn.ensemble import RandomForestRegressor
+from src.preprocessor import Preprocessor
+from src.custom_models import Average, Minimum, Maximum, SampleMean, Median, Mode
+from sklearn.linear_model import (
+    LassoLarsCV,
+    LinearRegression,
+    LogisticRegression,
+    ElasticNetCV,
+)
+from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestRegressor
 
 
 class Bucket:
@@ -19,6 +25,7 @@ class Bucket:
         self,
         y_col: str,
         data: pd.DataFrame = None,
+        encoding_operation: str = None,
         model_type: str = "avg",
         seed: int = 42,
         cv: int = 5,
@@ -44,14 +51,14 @@ class Bucket:
         """
 
         self.data = data
-        self.y = y_col
+        self.preprocessor = Preprocessor(y_col, encoding_operation)
         self.model = self.configure_model(model_type, cv, seed)
         # self.model_up_to_date = True
 
     def configure_model(self, model_type: str, cv: int, seed: int):
 
         if model_type.upper() == "SAMPLEMEAN":
-            model = Sample_mean()
+            model = SampleMean()
         elif model_type.upper() == "AVG":
             model = Average()
         elif model_type.upper() == "MIN":
@@ -65,6 +72,12 @@ class Bucket:
 
         elif model_type.upper() == "LINREG":
             model = LinearRegression()
+
+        elif model_type.upper() == "LOGREG":
+            model = LogisticRegression()
+
+        elif model_type.upper() == "HGB":
+            model = HistGradientBoostingRegressor()
 
         elif model_type.upper() in [
             "ELASTICNET",
@@ -84,18 +97,6 @@ class Bucket:
 
         return model
 
-    def transform_data(self) -> None:
-        # transform self.data from list of dict to df
-
-        if type(self.data) == pd.DataFrame:
-            warnings.warn(
-                "You are trying to transform Bucket data to pd.DataFrame, but it is already a pd.DataFrame"
-            )
-
-        else:
-            self.data = pd.DataFrame(self.data)
-            self.data = self.data.iloc[:, :-1]
-
     def append(self, row: dict) -> None:
 
         if type(row) == dict:
@@ -105,33 +106,20 @@ class Bucket:
                 "You are trying to append something else than a dict to a list of dict"
             )
 
-    def encode(self, operation_type: str = None) -> None:
-        if operation_type == "ohe":
-            pass
-        else:
-            # remove all non-numerical cols
-            self.data = self.data.select_dtypes(["number"])
-        # cumulated sum OHE
-        pass
+    def predict_one(self, pred_x) -> None:
 
-    def _generate_split(self) -> None:
-        y_col_index_no = self.data.columns.get_loc(self.y)
-        X = self.data.iloc[:, :y_col_index_no]  # everything up to y_column
-        y = self.data.loc[self.y]  # y_column
-        print(X)
-        # NOT DONE YET, ADD ACTUAL TRAIN TEST SPLIT
-
-        return X, y
-
-    def predict(self, pred_x) -> None:
         return self.model.predict(pred_x)[0]
 
     def finalize(self) -> None:
+
         print("Transforming data to pd.DataFrame...")
-        self.transform_data()
+        self.data = self.preprocessor.transform_data(self.data)
+
         print("Encoding data...")
-        self.encode("num_cols_only")
+        self.data = self.preprocessor.encode(self.data)
+
         print("Generating train-test-split...")
-        X, y = self._generate_split()
-        print(f"Fitting {self.model} model to bucketed training data...")
+        X, y = self.preprocessor.generate_split(self.data, test_size=0.8)
+
+        print(f"Fitting {self.model} model to training data of bucket...")
         self.model.fit(X, y)
