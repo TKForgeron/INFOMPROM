@@ -24,13 +24,16 @@ class Preprocessor:
 
         return data
 
-    def encode(self, data, operation_type: str = None) -> pd.DataFrame:
+    def encode(
+        self, data, operation_type: str = None, dropna: bool = True
+    ) -> pd.DataFrame:
         # check if encoding operation is specified at function call
         if operation_type == None:
             # if not, assign the encoding_operation assigned at class instantiation
             operation_type = self.encoding_operation
 
-        data = data.dropna(axis=1)
+        if dropna:
+            data = data.dropna(axis=1)
 
         if type(operation_type) == str:
             if operation_type.upper() == "OHE":
@@ -47,7 +50,8 @@ class Preprocessor:
                 )
 
         # cumulated sum OHE
-        return data
+        # self.x_cols = data.columns.tolist()
+        return data, data.columns.tolist()
 
     def generate_split(
         self, data: pd.DataFrame, train_size: float = None, test_size: float = None
@@ -59,3 +63,10 @@ class Preprocessor:
         # NOT FINISHED YET, ADD ACTUAL TRAIN TEST SPLIT
 
         return X, y
+
+    def prepare_for_prediction(
+        self, x_pred: pd.DataFrame, training_x_cols: list[str]
+    ) -> pd.DataFrame:
+        x_pred = x_pred[training_x_cols]
+
+        return x_pred

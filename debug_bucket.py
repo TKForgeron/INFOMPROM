@@ -1,15 +1,26 @@
 from src.bucket import Bucket
+from src.preprocessor import Preprocessor
 import pandas as pd
 
-df = pd.read_csv("data/converted_df.csv", index_col=0)
+df = pd.read_csv("data/converted_df.csv")
 
-col_index_no = df.columns.get_loc("horse")
-print(col_index_no)
+three_traces = df.iloc[:, :73]
+x_pred = df.iloc[74:75]
 
-b = Bucket(y_col="RemainingTime", data=df)
+bucket = Bucket(y_col="RemainingTime", data=three_traces, model_type="median")
+bucket.finalize()
 
-data = b.data
-b.encode()
-X, y = b._generate_split()
+pp = Preprocessor(
+    y_col=bucket.preprocessor.y_col,
+    encoding_operation=bucket.preprocessor.encoding_operation,
+)
+three_traces = pp.prepare_for_prediction(three_traces, bucket.x_cols)
 
-b.model.fit(X, y)
+# log = three_traces[bucket.x_cols]
+# print("-" * 10)
+# print(log)
+# print("-" * 10)
+
+print(f"Predicting remaining time using {bucket.model} model...")
+y_pred = bucket.model.predict(three_traces)
+print(f"Example of first 5 predictions: {y_pred[:5]}")

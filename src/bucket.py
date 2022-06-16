@@ -50,6 +50,9 @@ class Bucket:
 
         """
 
+        # for making predictions, model input should have cols equal to train data
+        self.x_cols = []
+
         self.data = data
         self.preprocessor = Preprocessor(y_col, encoding_operation)
         self.model = self.configure_model(model_type, cv, seed)
@@ -116,7 +119,9 @@ class Bucket:
         self.data = self.preprocessor.transform_data(self.data)
 
         print("Encoding data...")
-        self.data = self.preprocessor.encode(self.data)
+        self.data, self.x_cols = self.preprocessor.encode(self.data)
+        print(self.x_cols)
+        print(len(self.x_cols))
 
         print("Generating train-test-split...")
         X, y = self.preprocessor.generate_split(self.data, test_size=0.8)
