@@ -1,3 +1,4 @@
+import warnings
 import pandas as pd
 
 
@@ -27,6 +28,7 @@ class Sample_mean:
         self.fit()
 
     def predict():
+        warnings.warn("Sample mean not yet implemented")
         pass
 
 
@@ -35,6 +37,9 @@ class Average:
         self,
     ) -> None:
         self.prediction = None
+
+    def __str__(self):
+        return "Average()"
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
         """
@@ -61,6 +66,8 @@ class Average:
         return self.fit()
 
     def predict(self, X: pd.DataFrame):
+        if not self.prediction:
+            warnings.warn("Model has not been fitted yet")
         return [self.prediction] * X.shape[0]
 
 
@@ -95,6 +102,8 @@ class Minimum:
         return self.fit()
 
     def predict(self, X: pd.DataFrame):
+        if not self.prediction:
+            warnings.warn("Model has not been fitted yet")
         return [self.prediction] * X.shape[0]
 
 
@@ -129,6 +138,8 @@ class Maximum:
         return self.fit()
 
     def predict(self, X: pd.DataFrame):
+        if not self.prediction:
+            warnings.warn("Model has not been fitted yet")
         return [self.prediction] * X.shape[0]
 
 
@@ -163,6 +174,8 @@ class Median:
         return self.fit()
 
     def predict(self, X: pd.DataFrame):
+        if not self.prediction:
+            warnings.warn("Model has not been fitted yet")
         return [self.prediction] * X.shape[0]
 
 
@@ -197,4 +210,6 @@ class Mode:
         return self.fit()
 
     def predict(self, X: pd.DataFrame):
+        if not self.prediction:
+            warnings.warn("Model has not been fitted yet")
         return [self.prediction] * X.shape[0]

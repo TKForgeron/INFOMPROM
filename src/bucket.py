@@ -2,13 +2,14 @@
 # from nptyping import NDArray, Bool, Shape
 import warnings
 import pandas as pd
-from custom_models import Average, Minimum, Maximum, Sample_mean, Median, Mode
+from src.custom_models import Average, Minimum, Maximum, Sample_mean, Median, Mode
 from sklearn.linear_model import LassoLarsCV, LinearRegression, ElasticNetCV
 from sklearn.ensemble import RandomForestRegressor
 
 
 class Bucket:
     # TODO fix sklearn models
+    # TODO make OHE cols of all activities found
     # TODO predict moet per unfinished trace een prediction geven
     # TODO check if append() works
     # TODO integrate a scoring function (e.g. MAE, MSE, Cross Entropy)
@@ -78,7 +79,7 @@ class Bucket:
             model = RandomForestRegressor(n_estimators=10, random_state=seed)
 
         else:
-            warnings.warn("Model type unknown, we resort to using linear regression")
+            warnings.warn("Model type unknown, resorting to using linear regression")
             model = LinearRegression()
 
         return model
@@ -104,19 +105,33 @@ class Bucket:
                 "You are trying to append something else than a dict to a list of dict"
             )
 
-    def encode(self) -> None:
-        # for now, remove all non-numerical cols
+    def encode(self, operation_type: str = None) -> None:
+        if operation_type == "ohe":
+            pass
+        else:
+            # remove all non-numerical cols
+            self.data = self.data.select_dtypes(["number"])
         # cumulated sum OHE
         pass
+
+    def _generate_split(self) -> None:
+        y_col_index_no = self.data.columns.get_loc(self.y)
+        X = self.data.iloc[:, :y_col_index_no]  # everything up to y_column
+        y = self.data.loc[self.y]  # y_column
+        print(X)
+        # NOT DONE YET, ADD ACTUAL TRAIN TEST SPLIT
+
+        return X, y
 
     def predict(self, pred_x) -> None:
         return self.model.predict(pred_x)[0]
 
     def finalize(self) -> None:
+        print("Transforming data to pd.DataFrame...")
         self.transform_data()
-        print("Data transformed to pd.DataFrame")
-        self.encode()
-        X = self.data.drop([self.y], axis=1)  # everything until remaining time
-        y = self.data.loc[self.y]  # remaining time
+        print("Encoding data...")
+        self.encode("num_cols_only")
+        print("Generating train-test-split...")
+        X, y = self._generate_split()
+        print(f"Fitting {self.model} model to bucketed training data...")
         self.model.fit(X, y)
-        print(f"{self.model} model fitted to bucketed training data")
