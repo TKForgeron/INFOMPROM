@@ -1,3 +1,4 @@
+import pickle
 from src.ats import *
 import pandas as pd
 import numpy as np
@@ -9,6 +10,7 @@ from sklearn.model_selection import train_test_split
 
 PREPROCESSING_IN_FILE = "incidentProcess_custom.csv"
 PREPROCESSING_OUT_FILE = "preprocessed_events"
+ATS_OUT_FILE = "ats"
 RANDOM_SEED = 42
 TARGET_COLUMN = "RemainingTime"
 # Some code to test the code carefully (i.e. not run it with the full event log)
@@ -21,14 +23,13 @@ TARGET_COLUMN = "RemainingTime"
 
 # Saving time... in case you've already done the preprocessing
 try:
-    print("Reading preprocessed data from pickle...")
     data = pd.read_pickle(f"data/{PREPROCESSING_OUT_FILE}.pkl")
 except:
     try:
-        print("Reading from pickle failed -> Reading preprocessed data from csv...")
+        print("Reading from pickle failed")
         data = pd.read_csv(f"data/{PREPROCESSING_OUT_FILE}.csv")
     except:
-        print("Reading from csv failed, create data")
+        print("Reading from csv failed")
         input = InputData(PREPROCESSING_IN_FILE)
         input.apply_preprocessing()
         input.save_df(PREPROCESSING_OUT_FILE, "pkl")
@@ -76,18 +77,25 @@ ats = ATS(
     encoding_operation=None,
     seed=RANDOM_SEED,
 )
-ats.create_ATS(data_train)
-ats.print()
-ats.finalize()
-ats.save()
+
+try:
+    with open(f"data/{ATS_OUT_FILE}.pkl", "rb") as file:
+        ats = pickle.load(file)
+except:
+    print("Reading ATS from pickle failed")
+    ats.create_ATS(data_train)
+    # ats.print()
+    ats.finalize()
+    ats.save(ATS_OUT_FILE)
 
 
 # print_ATS(ats)
 
 i = 0
 
-print("\n\PREDICTION OUTPUT:\n")
+print("\nPREDICTION OUTPUT:\n")
 for event in X_test.to_dict(orient="records"):
+    print(f"Prediction for {event['Incident ID'], event['Activity']}")
     ats.traverse_ats(event)
 
     if i == 5:

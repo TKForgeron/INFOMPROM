@@ -4,6 +4,7 @@ from src.state import State
 from src.helper import printProgressBar
 import pickle
 
+
 class ATS:
     def __init__(
         self,
@@ -310,7 +311,7 @@ class ATS:
 
         print("\n")
 
-    def save(self, name="ats"):
+    def save(self, name: str = "ats"):
 
-        filehandler = open("data/" + name + "pkl","wb")
+        filehandler = open(f"data/{name}.pkl", "wb")
         pickle.dump(self, filehandler)
