@@ -155,8 +155,10 @@ class Bucket:
 
         print("Encoding data...")
         self.data, self.x_cols = self.preprocessor.encode(self.data)
-        print(self.x_cols)
-        print(len(self.x_cols))
+        # print(self.x_cols)
+        # print(len(self.x_cols))
+
+        # mss is het doordat x_cols van boven gedefinieerd wordt
 
         print("Generating train-test-split...")
         X, y = self.preprocessor.generate_split(self.data, test_size=0.8)

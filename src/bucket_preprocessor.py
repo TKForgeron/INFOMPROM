@@ -67,6 +67,12 @@ class Preprocessor:
     def prepare_for_prediction(
         self, x_pred: pd.DataFrame, training_x_cols: list[str]
     ) -> pd.DataFrame:
+
+        x_pred = pd.DataFrame(x_pred)
         x_pred = x_pred[training_x_cols]
+        # print("-" * 8)
+        # print(x_pred.head())
+        # print(x_pred.columns)
+        # print("-" * 8)
 
         return x_pred

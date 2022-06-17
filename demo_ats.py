@@ -37,7 +37,7 @@ except:
 # Required input read directly from csv as lists are converted to strings.
 # data["PrevEvents"] = [ast.literal_eval(x) for x in data["PrevEvents"]]
 
-# <<<< take a sample of 5% for testing
+# <<<< take a sample of 0.5% for testing
 unique_ids = data["Incident ID"].unique()
 
 
@@ -47,7 +47,7 @@ def sample_percentage(population, perc, seed):
     return random.sample(population, n_samples)
 
 
-sampled_ids = sample_percentage(unique_ids.tolist(), 5, RANDOM_SEED)
+sampled_ids = sample_percentage(unique_ids.tolist(), 0.5, RANDOM_SEED)
 data = data.loc[data["Incident ID"].isin(sampled_ids)]
 # remove this section for complete demo >>>>
 
@@ -61,7 +61,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 data_train = pd.concat([X_train, y_train], axis=1)
 
-# exit(0)
 
 # data_train = data[~data["Incident ID"].isin(["IM0000042"])]
 # data_test = data[data["Incident ID"].isin(["IM0000042"])]
@@ -72,7 +71,8 @@ ats = ATS(
     "Activity",
     TARGET_COLUMN,
     "set",
-    model_type="hgb",
+    model_type="avg",
+    encoding_operation=None,
     seed=RANDOM_SEED,
 )
 ats.create_ATS(data_train)
@@ -81,12 +81,12 @@ ats.finalize()
 
 # print_ATS(ats)
 
-# i = 0
+i = 0
 
-# print("\n\PREDICTION OUTPUT:\n")
-# for event in data_test.to_dict(orient="records"):
-#     ats.traverse_ats(event)
+print("\n\PREDICTION OUTPUT:\n")
+for event in X_test.to_dict(orient="records"):
+    ats.traverse_ats(event)
 
-#     if i == 5:
-#         break
-#     i += 1
+    if i == 5:
+        break
+    i += 1

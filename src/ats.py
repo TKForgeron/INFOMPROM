@@ -107,7 +107,9 @@ class ATS:
 
         state_id = len(self.states)
         self.states.append(
-            State(state_id, activities, self.rep, self.y_col, self.model_type)
+            State(
+                state_id, activities, self.rep, self.y_col, model_type=self.model_type
+            )
         )
 
         return state_id
@@ -222,7 +224,7 @@ class ATS:
 
                 print("Data:", file=text_file)
 
-                for row in state.data:
+                for row in state.bucket.data:
 
                     print(row, file=text_file)
 

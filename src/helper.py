@@ -6,7 +6,8 @@ def printProgressBar(
     suffix="",
     decimals=1,
     length=100,
-    fill="█",
+    # fill="█",
+    fill="X",
     printEnd="\r",
 ):
     """
