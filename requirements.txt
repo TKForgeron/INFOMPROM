@@ -21,6 +21,7 @@ ipynb==0.5.1
 ipython==8.4.0
 jedi==0.18.1
 Jinja2==3.1.2
+joblib==1.1.0
 jsonpickle==2.2.0
 jupyter-client==7.3.1
 jupyter-core==4.10.0
@@ -57,13 +58,16 @@ python-dateutil==2.8.2
 pytz==2022.1
 pyvis==0.2.1
 pyzmq==23.1.0
+scikit-learn==1.1.1
 scipy==1.8.1
 six==1.16.0
+sklearn==0.0
 sortedcontainers==2.4.0
 SQLAlchemy==1.4.37
 stack-data==0.2.0
 StringDist==1.0.9
 sympy==1.10.1
+threadpoolctl==3.1.0
 toml==0.10.2
 tomli==2.0.1
 tornado==6.1
