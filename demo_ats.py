@@ -25,12 +25,13 @@ try:
     data = pd.read_pickle(f"data/{PREPROCESSING_OUT_FILE}.pkl")
 except:
     try:
-        print("Reading preprocessed data from csv...")
+        print("Reading from pickle failed -> Reading preprocessed data from csv...")
         data = pd.read_csv(f"data/{PREPROCESSING_OUT_FILE}.csv")
     except:
+        print("Reading from csv failed, create data")
         input = InputData(PREPROCESSING_IN_FILE)
         input.apply_preprocessing()
-        input.save_df(PREPROCESSING_OUT_FILE, "csv")
+        input.save_df(PREPROCESSING_OUT_FILE, "pkl")
         data = input.df
 
 
@@ -78,6 +79,8 @@ ats = ATS(
 ats.create_ATS(data_train)
 ats.print()
 ats.finalize()
+ats.save()
+
 
 # print_ATS(ats)
 
