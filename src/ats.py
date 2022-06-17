@@ -2,7 +2,7 @@ import sys
 import pandas as pd
 from src.state import State
 from src.helper import printProgressBar
-
+import pickle
 
 class ATS:
     def __init__(
@@ -307,3 +307,8 @@ class ATS:
             state.finalize()
 
         print("\n")
+
+    def save(self, name="ats"):
+
+        filehandler = open("data/" + name + "pkl","wb")
+        pickle.dump(self, filehandler)

@@ -79,6 +79,9 @@ ats = ATS(
 ats.create_ATS(data_train)
 ats.print()
 ats.finalize()
+ats.save()
+
+
 
 # print_ATS(ats)
 
