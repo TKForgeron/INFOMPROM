@@ -26,7 +26,14 @@ class State:
         self.activities = activities
         self.rep = representation
         self.id = id
-        self.bucket = Bucket(y_col, [], encoding_operation, model_type, seed, cv)
+        self.bucket = Bucket(
+            y_col,
+            [],
+            encoding_operation=encoding_operation,
+            model_type=model_type,
+            seed=seed,
+            cv=cv,
+        )
         self.subsequent_states = []
 
     def add_event(self, row: dict):
