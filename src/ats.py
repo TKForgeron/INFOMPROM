@@ -200,7 +200,7 @@ class ATS:
         self.x_cols = X.columns.tolist()
         self.y_col = y.name
 
-        grouped = X.groupby(self.trace_id_col)
+        grouped = pd.concat([X, y], axis=1).groupby(self.trace_id_col)
 
         length = len(grouped)
         i = 0
@@ -250,11 +250,11 @@ class ATS:
 
         print("\n")  # some weird bug in the progress
 
-    def traverse_ats(self, event: dict) -> float:
+    def predict(self, event: dict) -> float:
 
         """
 
-        Function that traverses the ats to find the bucket that must
+        Function that traverses the ATS to find the bucket that must
         be used for predicting the given event.
 
 
@@ -277,7 +277,8 @@ class ATS:
 
         # print("\n--------------------------------")
         # print(f"ID: {event['Incident ID']} acts: {event['PrevEvents']}")
-
+        print(event)
+        print(event["PrevEvents"])
         for l in range(1, len(event["PrevEvents"]) + 1):
 
             sub_seq = state.subsequent_states

@@ -28,6 +28,7 @@ class State:
         self.rep = representation
         self.id = id
         self.bucket = Bucket(
+            id=id,
             x_cols=x_cols,
             y_col=y_col,
             data=[],  # is empty as we fill this on-the-go and transform to pd.DataFrame upon completion

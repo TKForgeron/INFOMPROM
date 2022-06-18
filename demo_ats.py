@@ -94,7 +94,9 @@ i = 0
 print("\nPREDICTION OUTPUT:\n")
 for event in X_test.to_dict(orient="records"):
     print(f"Prediction for {event['Incident ID'], event['Activity']}")
-    ats.traverse_ats(event)
+
+    # ZOU BETER ZIJN ALS IE IPV 1 EVENT INNEEMT, EEN LIJST NEEM EN LIJST VAN PREDICTIONS TERUGGEEFT
+    ats.predict(event)
 
     if i == 5:
         break

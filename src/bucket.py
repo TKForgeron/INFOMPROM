@@ -1,5 +1,6 @@
 # from logging import raiseExceptions
 # from nptyping import NDArray, Bool, Shape
+from msilib import type_key
 import warnings
 import pandas as pd
 from src.bucket_preprocessor import Preprocessor
@@ -25,6 +26,7 @@ class Bucket:
 
     def __init__(
         self,
+        id: int,
         x_cols: list[str],
         y_col: str,
         data: list[dict],
@@ -56,6 +58,7 @@ class Bucket:
         """
 
         # for making predictions, model input should have cols equal to train data
+        self.id = id
         self.x_cols = x_cols
         self.y_col = y_col
         self.X = None  # pd.DataFrame
@@ -85,14 +88,11 @@ class Bucket:
             )
 
     def _transform_data(self) -> None:
-        # transform self.data from list of dict to df
-        # y_list = []
-        # for row in self.data:
-        #     y_list.append(row.pop("RemainingTime", None))
 
+        # Bucket0 belongs to the empty state, which has no data?
         self.X = pd.DataFrame(self.data)
-        self.y = self.X.loc[self.y_col]
-        self.X = self.X.loc[self.x_cols]
+        self.y = pd.Series(self.X[self.y_col])
+        self.X = self.X[self.x_cols]
 
     def configure_model(self, model_type: str, cv: int, seed: int):
 
@@ -164,19 +164,20 @@ class Bucket:
         return self.model.predict(pred_x)[0]
 
     def finalize(self) -> None:
+        print(f"Finalizing Bucket {self.id}...")
+        if self.id != 0:
+            # print("Transforming data to pd.DataFrame...")
+            self._transform_data()
 
-        print("Transforming data to pd.DataFrame...")
-        self._transform_data()
+            # print("Encoding data...")
+            # self.data, self.x_cols = self.preprocessor.encode(self.data)
+            # print(self.x_cols)
+            # print(len(self.x_cols))
 
-        # print("Encoding data...")
-        # self.data, self.x_cols = self.preprocessor.encode(self.data)
-        # print(self.x_cols)
-        # print(len(self.x_cols))
+            # # mss is het doordat x_cols van boven gedefinieerd wordt
 
-        # # mss is het doordat x_cols van boven gedefinieerd wordt
+            # print("Generating train-test-split...")
+            # X, y = self.preprocessor.generate_split(self.data, test_size=0.8)
 
-        # print("Generating train-test-split...")
-        # X, y = self.preprocessor.generate_split(self.data, test_size=0.8)
-
-        print(f"Fitting {self.model} model to training data of bucket...")
-        self.model.fit(self.X, self.y)
+            print(f"Fitting {self.model} model to training data of Bucket {self.id}...")
+            self.model.fit(self.X, self.y)
