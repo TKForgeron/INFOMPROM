@@ -5,8 +5,6 @@ from src.print_ats import *
 from src.input_data import InputData
 from src.custom_models import Average, Minimum, Maximum, SampleMean, Median, Mode
 from sklearn.linear_model import (
-    HuberRegressor,
-    LassoLarsCV,
     LinearRegression,
     LogisticRegression,
     ElasticNetCV,
