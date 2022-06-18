@@ -1,7 +1,12 @@
+from cgi import test
+from lib2to3.pytree import convert
 import pandas as pd
 from datetime import datetime
 import numpy as np
 from pandasql import sqldf
+from categorical_encoders import *
+import random
+import pickle
 
 FILENAME = "incidentProcess_custom.csv"
 
@@ -40,7 +45,8 @@ class InputData:
         print("Adding remaining time attribute..")
 
         self.df["RemainingTime"] = (
-            self.df.groupby("Incident ID")["ActivityTimeStamp"].transform("max")
+            self.df.groupby("Incident ID")[
+                "ActivityTimeStamp"].transform("max")
             - self.df["ActivityTimeStamp"]
         )
 
@@ -52,18 +58,20 @@ class InputData:
             ascending=False
         )
 
-    def _add_prev_events(self) -> None:
+    def add_prev_events(self, data) -> None:
 
         print("Adding previous events attribute..")
 
-        self.df["PrevEvents"] = self.df["Activity"].apply(
+        data["PrevEvents"] = data["Activity"].apply(
             lambda x: [] if pd.isnull(x) else [x]
         )
-        self.df["PrevEvents"] = self.df.groupby("Incident ID")["PrevEvents"].apply(
+        data["PrevEvents"] = data.groupby("Incident ID")["PrevEvents"].apply(
             lambda x: x.cumsum()
         )
 
-    def _filter_incomplete_processes(self):
+        return data
+
+    def filter_incomplete_processes(self):
 
         print("Filtering out incomplete processes..")
 
@@ -81,43 +89,150 @@ class InputData:
         """
         self.df = sqldf(q)
 
-    def apply_preprocessing(
-        self, agg_cols: list = AGG_COLS, date_cols: list = DATE_COLS
+
+    def add_agg_col(self, aggregation: str = "rem_time") -> None:
+
+        if(aggregation == "rem_time"):
+            self._add_remaining_time()
+        if(aggregation == "rem_act"):
+            self._add_remaining_act()
+    
+
+    def save_df(self, name: str = "converted_df", file: str = "csv", n_rows: int = -1) -> None:
+
+        print("Saving df..")
+        print_df = self.df
+
+        if n_rows >=0:
+            print_df = print_df.head(n_rows)
+
+        if file == "csv":
+            print_df.to_csv(f"data/{name}.csv")
+
+        elif file == "pickle":
+            print_df.to_pickle(f"data/{name}.pkl")
+
+    def save(self, name: str = "inputDataObject"):
+
+        filehandler = open(f"data/{name}.pkl", "wb")
+        pickle.dump(self, filehandler)
+
+    def apply_standard_preprocessing(
+        self, 
+        agg_col: str, 
+        filter_incompletes: bool = True,
+        convert_times: bool = True,
+        date_cols: list[str] = []
+
     ) -> None:
 
         print("\nSTART PREPROCESSING")
 
-        if "inc_cases" in agg_cols:
-            self._filter_incomplete_processes()
-        if "prev_events" in agg_cols:
-            self._add_prev_events()
-        if "conv_time" in agg_cols:
+        if agg_col not in ["rem_time", "rem_act"]:
+            raise AssertionError(
+                "ERROR: Another aggregation error must be chosen!"
+            )
+
+
+        if filter_incompletes:
+            self.filter_incomplete_processes()
+
+        # if "prev_events" in agg_cols:
+        #     self._add_prev_events()
+        if convert_times:
             if not date_cols:
                 raise AssertionError(
                     "ERROR: No columns for date conversions were given!"
                 )
             self._convert_times(date_cols)
-        if "rem_time" in agg_cols:
+
+        if agg_col == "rem_time":
             self._add_remaining_time()
-        if "rem_act" in agg_cols:
+        if agg_col == "rem_act":
             self._add_remaining_act()
+        
+    def use_cat_encoding_on(self, encoding: str, cat_vars: list[str]):
 
-        print("FINISHED PREPROCESSING\n")
+        print(f"Encoding columns {cat_vars} using {encoding} encoding..")
 
-    def save_df(self, name: str = "converted_df", file: str = "csv") -> None:
+        if(encoding == 'ohe'):
+            encoder = MultiOneHotEncoder(cat_vars)
+        elif(encoding == 'label'):
+            encoder = MultiLabelEncoder(cat_vars)
+        elif(encoding == 'hash'):
+            encoder = MultiFeatureHasher(cat_vars)
+        elif(encoding == 'none'):
+            encoder = NoEncoder(cat_vars)
 
-        print("Saving df..")
+        self.df = encoder.fit_transform(self.df)
 
-        if file == "csv":
-            self.df.to_csv(f"data/{name}.csv")
 
-        elif file == "pickle":
-            self.df.to_pickle(f"data/{name}.pkl")
+        # print("FINISHED PREPROCESSING\n")
+
+
+    def split_test_train(self, y_col: str, ratio: int = 0.8):
+
+        unique_ids = self.df["Incident ID"].unique().tolist()
+        
+        l = len(unique_ids)
+
+        chosen_ids = random.sample(unique_ids, k=round(l*ratio))
+
+        train_data = self.df.loc[self.df["Incident ID"].isin(chosen_ids)]
+        train_Y = train_data.pop(y_col)
+
+        test_data = self.df.loc[~self.df["Incident ID"].isin(chosen_ids)]
+        test_Y = test_data.pop(y_col)
+        
+        return train_data.copy(), test_data.copy(), train_Y.copy(), test_Y.copy()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
 
     input = InputData(FILENAME)
-    input.apply_preprocessing(AGG_COLS, DATE_COLS)
-    # input.filter_incomplete_processes()
-    input.save_df()
+    input.apply_standard_preprocessing(agg_col='rem_time', # calculated y column
+                                       filter_incompletes = True,
+                                       convert_times= True, 
+                                       date_cols = DATE_COLS # must be given when "convert_times is true"
+                                       )
+    
+    input.use_cat_encoding_on('ohe', ['Priority']) # can be a list of features that need ohe
+    input.use_cat_encoding_on('label', ['Category']) # can be a list of features that need label / numerical encoding
+    input.use_cat_encoding_on('none', ['Service Affected']) # list of features that need to be deleted
+
+    input.save_df(n_rows=20) # save function with new "n_rows" feature that ensures opening in vscode
+
+    input.save()
+
+    # split function that keeps traces together
+    train_X, test_X, train_Y, test_Y = input.split_test_train(y_col= "RemainingTime",
+                                                              ratio = 0.8 # ratio train/test data
+    ) 
+
+    # with open(f"data/inputDataObject.pkl", "rb") as obj:
+    #     input = pickle.load(obj)
+
+    # # split function that keeps traces together
+    # train_X, test_X, train_Y, test_Y = input.split_test_train(y_col= "RemainingTime",
+    #                                                           ratio = 0.8 # ratio train/test data
+    #                                                           ) 
+
+
+    # test_X = input.add_prev_events(test_X) #self explanatory
+
+
+
+
