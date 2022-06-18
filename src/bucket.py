@@ -30,8 +30,8 @@ class Bucket:
         x_cols: list[str],
         y_col: str,
         data: list[dict],
+        model,
         encoding_operation: str = None,
-        model_type: str = None,
         seed: int = None,
         cv: int = None,
     ) -> None:
@@ -50,6 +50,9 @@ class Bucket:
                 Column names of the feature variables. Initially these are set by the
                 State. Upon encoding the data these are updated, as some columns may
                 be dropped or added.
+            model : {Some estimator}
+                Estimator class that is passed. This class must have the methods:
+                fit() and predict().
             seed : [int]
                 Controls the randomness that some models can have.
             cv : [int]
@@ -64,14 +67,13 @@ class Bucket:
         self.X = None  # pd.DataFrame
         self.y = None  # pd.Series
         self.data = data
-        # preprocessor will probably be removed
-        self.preprocessor = Preprocessor(y_col, encoding_operation)
+        self.model = model
         if seed is None:
             seed = 42
         if cv is None:
             cv = 5
         self.cv = cv
-        self.model = self.configure_model(model_type, cv, seed)
+        # self.model = self.configure_model(model_type, cv, seed)
         self.mean_accuracy = None  # float
         # self.model_up_to_date = True
 
@@ -90,51 +92,26 @@ class Bucket:
     def _transform_data(self) -> None:
 
         # Bucket0 belongs to the empty state, which has no data?
+
+        # taking only x_cols and y_col from data
         self.X = pd.DataFrame(self.data)
         self.y = pd.Series(self.X[self.y_col])
         self.X = self.X[self.x_cols]
 
-    def configure_model(self, model_type: str, cv: int, seed: int):
+    def clean(self, num_only: bool = True, dropna: bool = False) -> list[str]:
+        def get_list_diff(a: list, b: list) -> list:
+            return list(set(a) - set(b)) + list(set(b) - set(a))
 
-        if model_type is not None:
+        if num_only:
+            df = self.X.select_dtypes(["number"])
+            new_x_cols = df.columns.tolist()
+            self.X = df
+            dropped_cols = get_list_diff(new_x_cols, self.x_cols)
+            self.x_cols = new_x_cols
+        if dropna:
+            self.X = self.X.dropna()
 
-            if model_type.upper() == "SAMPLEMEAN":
-                model = SampleMean()
-            elif model_type.upper() == "AVG":
-                model = Average()
-            elif model_type.upper() == "MIN":
-                model = Minimum()
-            elif model_type.upper() == "MAX":
-                model = Maximum()
-            elif model_type.upper() == "MEDIAN":
-                model = Median()
-            elif model_type.upper() == "MODE":
-                model = Mode()
-            elif model_type.upper() == "LINREG":
-                model = LinearRegression()
-            elif model_type.upper() == "LOGREG":
-                model = LogisticRegression()
-            elif model_type.upper() == "HGB":
-                model = HistGradientBoostingRegressor()
-            elif model_type.upper() in [
-                "ELASTICNET",
-                "ELASTICNETCV",
-            ]:
-                model = ElasticNetCV(cv=cv)
-            elif model_type.upper() in ["LASSOLARSCV", "LASSOLARS"]:
-                model = LassoLarsCV(cv=cv)
-            elif model_type.upper() == "RF":
-                model = RandomForestRegressor(n_estimators=10, random_state=seed)
-            else:
-                warnings.warn(
-                    "Model type unknown, resorting to using linear regression"
-                )
-                model = LinearRegression()
-        else:
-            warnings.warn("Model type unknown, resorting to using linear regression")
-            model = LinearRegression()
-
-        return model
+        return dropped_cols
 
     def cross_validate(self) -> None:
         try:
@@ -159,22 +136,28 @@ class Bucket:
         except:
             warnings.warn("score_custom_model() applied to a non-custom model.")
 
-    def predict_one(self, pred_x) -> None:
+    def predict(self, pred_x: pd.DataFrame) -> list[float]:
+        prepped_pred_x = pred_x[self.x_cols]
 
-        return self.model.predict(pred_x)[0]
+        if self.model.__str__() != "HistGradientBoostingRegressor()":
+            prepped_pred_x = prepped_pred_x.dropna()
+
+        return self.model.predict(prepped_pred_x)
+
+    def predict_one(self, pred_x) -> float:
+
+        return self.predict(pred_x)[0]
 
     def finalize(self) -> None:
         print(f"Finalizing Bucket {self.id}...")
         if self.id != 0:
             # print("Transforming data to pd.DataFrame...")
             self._transform_data()
-
-            # print("Encoding data...")
-            # self.data, self.x_cols = self.preprocessor.encode(self.data)
-            # print(self.x_cols)
-            # print(len(self.x_cols))
-
-            # # mss is het doordat x_cols van boven gedefinieerd wordt
+            dropped_cols = self.clean(num_only=True)
+            print(f"\t Dropped {len(dropped_cols)} columns:")
+            print(f"\t {dropped_cols}")
+            print(f"\t {len(self.X.columns.tolist())} columns left:")
+            print(f"\t {self.X.columns.tolist()}")
 
             # print("Generating train-test-split...")
             # X, y = self.preprocessor.generate_split(self.data, test_size=0.8)

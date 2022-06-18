@@ -13,6 +13,12 @@ class InputData:
             "data/" + str(filename), decimal=dec, sep=sep, engine="python"
         )
 
+    def get_df(self):
+        return self.df
+
+    def set_df(self, df):
+        self.df = df
+
     def _convert_times(self, date_cols: list) -> None:
 
         print("Converting dates.. ")
@@ -101,13 +107,20 @@ class InputData:
         pickle.dump(self, filehandler)
 
     def apply_standard_preprocessing(
-        self, agg_col: str, filter_incompletes: bool = True, date_cols: list[str] = []
+        self,
+        agg_col: str,
+        filter_incompletes: bool = True,
+        dropna: bool = False,
+        date_cols: list[str] = [],
     ) -> None:
 
         print("\nSTART PREPROCESSING")
 
         if agg_col not in ["rem_time", "rem_act"]:
             raise AssertionError("Please choose another aggregation column")
+
+        if dropna:
+            self.df = self.df.dropna(axis="index")
 
         if filter_incompletes:
             self.filter_incomplete_processes()

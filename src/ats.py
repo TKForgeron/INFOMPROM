@@ -10,12 +10,11 @@ class ATS:
         self,
         trace_id_col: str,
         act_col: str,
-        # y_col: str,
+        model,
         representation: str = "trace",
         horizon: int = sys.maxsize,
         filter_out: list = [],
         encoding_operation: str = None,
-        model_type: str = None,
         seed: int = 42,
         cv: int = 5,
     ) -> None:
@@ -29,7 +28,7 @@ class ATS:
         self.horizon = horizon
         self.filter_out = filter_out
 
-        self.model_type = model_type
+        self.model = model
 
         self.x_cols = []
         self.y_col = ""
@@ -42,7 +41,7 @@ class ATS:
             self.x_cols,
             self.y_col,
             encoding_operation,
-            model_type,
+            model,
             seed,
             cv,
         )
@@ -126,7 +125,7 @@ class ATS:
                 x_cols=self.x_cols,
                 y_col=self.y_col,
                 encoding_operation=self.encoding_operation,
-                model_type=self.model_type,
+                model=self.model,
             )
         )
 

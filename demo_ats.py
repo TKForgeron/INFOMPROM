@@ -1,103 +1,111 @@
 import pickle
 from src.ats import *
 import pandas as pd
-import numpy as np
 from src.print_ats import *
 from src.input_data import InputData
-import ast
-import random
-from sklearn.model_selection import train_test_split
+from src.custom_models import Average, Minimum, Maximum, SampleMean, Median, Mode
+from sklearn.linear_model import (
+    HuberRegressor,
+    LassoLarsCV,
+    LinearRegression,
+    LogisticRegression,
+    ElasticNetCV,
+)
+from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestRegressor
 
 PREPROCESSING_IN_FILE = "incidentProcess_custom.csv"
-PREPROCESSING_OUT_FILE = "preprocessed_events"
+INPUTDATA_OBJECT = "preprocessed_inputData_object"
 ATS_OUT_FILE = "ats"
 RANDOM_SEED = 42
 TARGET_COLUMN = "RemainingTime"
-# Some code to test the code carefully (i.e. not run it with the full event log)
-# data = pd.read_csv("data/incidentProcess_custom.csv", sep="\t")
+DATE_COLS = [
+    "ActivityTimeStamp",
+    "Open Time",
+    "Reopen Time",
+    "Resolved Time",
+    "Close Time",
+]
+AGG_COLS = ["conv_time", "rem_time", "rem_act", "inc_cases", "prev_events"]
 
-# data.to_csv("demo_data")
 
-# data_train = data[data["Incident ID"].isin(["IM0000038", "IM0000041"])]
-# data_test = data[data["Incident ID"].isin(["IM0000042"])]
+if __name__ == "__main__":
 
-# Saving time... in case you've already done the preprocessing
-try:
-    data = pd.read_pickle(f"data/{PREPROCESSING_OUT_FILE}.pkl")
-except:
     try:
-        print("Reading from pickle failed")
-        data = pd.read_csv(f"data/{PREPROCESSING_OUT_FILE}.csv")
+        raise Exception(
+            "Tuning preprocessing process, thus not loading pickled preprocessing instance"
+        )
+        input = pd.read_pickle(f"data/{INPUTDATA_OBJECT}.pkl")
     except:
-        print("Reading from csv failed")
         input = InputData(PREPROCESSING_IN_FILE)
-        input.apply_preprocessing()
-        input.save_df(PREPROCESSING_OUT_FILE, "pkl")
-        data = input.df
+        input.apply_standard_preprocessing(
+            agg_col="rem_time",  # calculated y column
+            filter_incompletes=True,
+            dropna=True,
+            date_cols=DATE_COLS,  # list of cols that must be transformed. If empty / not given, nothing will be transformed
+        )
 
+        # columns that have <20 unique values are one-hot encoded
+        input.use_cat_encoding_on(
+            "ohe", ["Priority", "Asset Type Affected", "Status", "Closure Code"]
+        )
 
-# Required input read directly from csv as lists are converted to strings.
-# data["PrevEvents"] = [ast.literal_eval(x) for x in data["PrevEvents"]]
+        # columns that have have ordinal values are label encoded
+        input.use_cat_encoding_on("label", ["Category"])
 
-# <<<< take a sample of 0.5% for testing
-unique_ids = data["Incident ID"].unique()
+        # columns with too many categories are deleted
+        input.use_cat_encoding_on(
+            "none",
+            [
+                "Service Affected",
+                "Asset SubType Affected",
+                "Service Caused",
+                "Assignment Group",
+            ],
+        )
 
+        input.save_df(
+            n_rows=20
+        )  # save function with new "n_rows" feature that ensures opening in vscode
 
-def sample_percentage(population, perc, seed):
-    n_samples = int(len(population) / 100 * perc)
-    random.seed(seed)
-    return random.sample(population, n_samples)
+        input.save(INPUTDATA_OBJECT)
 
+    # split function that keeps traces together
+    X_train, X_test, y_train, y_test = input.train_test_split_on_trace(
+        y_col=TARGET_COLUMN, ratio=0.05, seed=RANDOM_SEED
+    )
 
-sampled_ids = sample_percentage(unique_ids.tolist(), 0.5, RANDOM_SEED)
-data = data.loc[data["Incident ID"].isin(sampled_ids)]
-# remove this section for complete demo >>>>
+    # X_test = input.add_prev_events(X_test)  # self explanatory
 
-y_col_index_no = data.columns.get_loc(TARGET_COLUMN)
-X = data.iloc[:, :y_col_index_no]  # everything up to y_column
-y = data.iloc[:, y_col_index_no]  # y_column
+    ats = ATS(
+        trace_id_col="Incident ID",
+        act_col="Activity",
+        representation="set",
+        model=LinearRegression(),
+        encoding_operation=None,
+        seed=RANDOM_SEED,
+    )
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=RANDOM_SEED
-)
+    try:
+        raise Exception(
+            "Tuning preprocessing/ATS building process, thus not loading pickled ATS instance"
+        )
+        with open(f"data/{ATS_OUT_FILE}.pkl", "rb") as file:
+            ats = pickle.load(file)
+    except:
+        ats.fit(X_train, y_train)
+        # ats.print()
+        ats.finalize()
+        ats.save(ATS_OUT_FILE)
 
-data_train = pd.concat([X_train, y_train], axis=1)
+    i = 0
 
-# data_train = data[~data["Incident ID"].isin(["IM0000042"])]
-# data_test = data[data["Incident ID"].isin(["IM0000042"])]
+    print("\nPREDICTION OUTPUT:\n")
+    for event in X_test.to_dict(orient="records"):
+        print(f"Prediction for {event['Incident ID'], event['Activity']}")
 
-ats = ATS(
-    "Incident ID",
-    "Activity",
-    TARGET_COLUMN,
-    "set",
-    model_type="avg",
-    encoding_operation=None,
-    seed=RANDOM_SEED,
-)
+        # ZOU BETER ZIJN ALS IE IPV 1 EVENT INNEEMT, EEN LIJST NEEM EN LIJST VAN PREDICTIONS TERUGGEEFT
+        ats.predict(event)
 
-try:
-    with open(f"data/{ATS_OUT_FILE}.pkl", "rb") as file:
-        ats = pickle.load(file)
-except:
-    print("Reading ATS from pickle failed")
-    ats.fit(X, y)
-    # ats.print()
-    ats.finalize()
-    ats.save(ATS_OUT_FILE)
-
-
-# print_ATS(ats)
-
-i = 0
-
-print("\nPREDICTION OUTPUT:\n")
-for event in X_test.to_dict(orient="records"):
-    print(f"Prediction for {event['Incident ID'], event['Activity']}")
-
-    # ZOU BETER ZIJN ALS IE IPV 1 EVENT INNEEMT, EEN LIJST NEEM EN LIJST VAN PREDICTIONS TERUGGEEFT
-    ats.predict(event)
-
-    if i == 5:
-        break
-    i += 1
+        if i == 5:
+            break
+        i += 1

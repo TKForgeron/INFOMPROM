@@ -10,8 +10,8 @@ class State:
         representation: str,
         x_cols: list[str],
         y_col: str,
+        model,
         encoding_operation: str = None,
-        model_type: str = None,
         seed: int = None,
         cv: int = None,
     ) -> None:
@@ -33,7 +33,7 @@ class State:
             y_col=y_col,
             data=[],  # is empty as we fill this on-the-go and transform to pd.DataFrame upon completion
             encoding_operation=encoding_operation,
-            model_type=model_type,
+            model=model,
             seed=seed,
             cv=cv,
         )
