@@ -184,11 +184,6 @@ class InputData:
         test_data = self.df.loc[~self.df["Incident ID"].isin(chosen_ids)]
         test_Y = test_data.pop(y_col)
         
-        print(train_data.shape)
-        print(test_data.shape)
-        print(train_Y.shape)
-        print(test_Y.shape)
-
         return train_data.copy(), test_data.copy(), train_Y.copy(), test_Y.copy()
 
 
