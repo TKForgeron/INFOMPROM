@@ -49,9 +49,16 @@ class Preprocessor:
                     f"Expected pd.DataFrame (or pd.Series), got {type(data)} instead"
                 )
 
+        data_cols = data.columns.tolist()
+
+        def get_list_diff(a: list, b: list) -> list:
+            return list(set(a) - set(b)) + list(set(b) - set(a))
+
+        x_cols = get_list_diff(data_cols, [self.y_col])
+
         # cumulated sum OHE
         # self.x_cols = data.columns.tolist()
-        return data, data.columns.tolist()
+        return data, x_cols
 
     def generate_split(
         self, data: pd.DataFrame, train_size: float = None, test_size: float = None
@@ -70,9 +77,5 @@ class Preprocessor:
 
         x_pred = pd.DataFrame(x_pred)
         x_pred = x_pred[training_x_cols]
-        # print("-" * 8)
-        # print(x_pred.head())
-        # print(x_pred.columns)
-        # print("-" * 8)
 
         return x_pred

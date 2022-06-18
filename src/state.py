@@ -56,7 +56,7 @@ class State:
         )
         event = pp.prepare_for_prediction(event, self.bucket.x_cols)
 
-        print(f"Predicting remaining time using {self.bucket.model} model...")
+        print(f"Predicting remaining time using {self.bucket.model} model")
         y_pred = self.bucket.predict_one(event)
 
         # dit is wat we zometeen moeten runnen en dan kunnen we kijken of het overeen komt met de avg in de ats_output.txt
