@@ -188,7 +188,7 @@ class ATS:
 
             curr_state.add_event(event)
 
-    def build(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         """
         Main function that creates the ATS given an event log.
 

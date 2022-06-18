@@ -93,7 +93,7 @@ if __name__ == "__main__":
     #         ats = pickle.load(file)
     # except:
     print("Reading ATS from pickle failed")
-    ats.build(X_train, y_train)
+    ats.fit(X_train, y_train)
     # ats.print()
     ats.finalize()
     ats.save(ATS_OUT_FILE)
