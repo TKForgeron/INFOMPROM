@@ -25,9 +25,9 @@ class Bucket:
 
     def __init__(
         self,
-        y_col: str,
         x_cols: list[str],
-        data: pd.DataFrame = [],
+        y_col: str,
+        data: list[dict],
         encoding_operation: str = None,
         model_type: str = None,
         seed: int = None,
@@ -38,12 +38,10 @@ class Bucket:
 
         Parameters
         ----------
-            data : [pd.DataFrame]
+            data : [list[dict]]
                 A subset of a complete event log, filtered by states using
                 an Annotated Transition System.
                 At initialization (in an ATS node) this is a list of dictionaries.
-                When the ATS is fully constructed, this attribute will be transformed
-                to a pandas dataframe.
             y_col : [str]
                 Column name of the target variable.
             x_cols : [list[str]]
@@ -59,7 +57,11 @@ class Bucket:
 
         # for making predictions, model input should have cols equal to train data
         self.x_cols = x_cols
+        self.y_col = y_col
+        self.X = None  # pd.DataFrame
+        self.y = None  # pd.Series
         self.data = data
+        # preprocessor will probably be removed
         self.preprocessor = Preprocessor(y_col, encoding_operation)
         if seed is None:
             seed = 42
@@ -67,31 +69,30 @@ class Bucket:
             cv = 5
         self.cv = cv
         self.model = self.configure_model(model_type, cv, seed)
-        self.mean_accuracy = None
+        self.mean_accuracy = None  # float
         # self.model_up_to_date = True
 
-    def cross_validate(self) -> None:
-        try:
-            if self.model.is_custom_model:
-                self.score_custom_model()
-        except:
-            scores = cross_val_score(
-                self.model,
-                self.data[self.x_cols],
-                self.data[self.preprocessor.y_col],
-                cv=self.cv,
-                n_jobs=-1,
+    def append(self, row: dict) -> None:
+        # Could add check if added event has same keys as self.x_cols,
+        # as this should be the case
+        # self.x_cols == list(row.keys())
+
+        if type(row) == dict:
+            self.data.append(row)
+        else:
+            raise Exception(
+                "You are trying to append something else than a dict to a list of dict"
             )
 
-            self.mean_accuracy = scores.mean()
+    def _transform_data(self) -> None:
+        # transform self.data from list of dict to df
+        # y_list = []
+        # for row in self.data:
+        #     y_list.append(row.pop("RemainingTime", None))
 
-    def score_custom_model(self) -> None:
-        try:
-            if self.model.is_custom_model:
-                print(f"Scoring {self.model} model...")
-
-        except:
-            warnings.warn("score_custom_model() applied to a non-custom model.")
+        self.X = pd.DataFrame(self.data)
+        self.y = self.X.loc[self.y_col]
+        self.X = self.X.loc[self.x_cols]
 
     def configure_model(self, model_type: str, cv: int, seed: int):
 
@@ -135,14 +136,28 @@ class Bucket:
 
         return model
 
-    def append(self, row: dict) -> None:
-
-        if type(row) == dict:
-            self.data.append(row)
-        else:
-            raise Exception(
-                "You are trying to append something else than a dict to a list of dict"
+    def cross_validate(self) -> None:
+        try:
+            if self.model.is_custom_model:
+                self.score_custom_model()
+        except:
+            scores = cross_val_score(
+                self.model,
+                self.data[self.x_cols],
+                self.data[self.preprocessor.y_col],
+                cv=self.cv,
+                n_jobs=-1,
             )
+
+            self.mean_accuracy = scores.mean()
+
+    def score_custom_model(self) -> None:
+        try:
+            if self.model.is_custom_model:
+                print(f"Scoring {self.model} model...")
+
+        except:
+            warnings.warn("score_custom_model() applied to a non-custom model.")
 
     def predict_one(self, pred_x) -> None:
 
@@ -151,17 +166,17 @@ class Bucket:
     def finalize(self) -> None:
 
         print("Transforming data to pd.DataFrame...")
-        self.data = self.preprocessor.transform_data(self.data)
+        self._transform_data()
 
-        print("Encoding data...")
-        self.data, self.x_cols = self.preprocessor.encode(self.data)
-        print(self.x_cols)
-        print(len(self.x_cols))
+        # print("Encoding data...")
+        # self.data, self.x_cols = self.preprocessor.encode(self.data)
+        # print(self.x_cols)
+        # print(len(self.x_cols))
 
-        # mss is het doordat x_cols van boven gedefinieerd wordt
+        # # mss is het doordat x_cols van boven gedefinieerd wordt
 
-        print("Generating train-test-split...")
-        X, y = self.preprocessor.generate_split(self.data, test_size=0.8)
+        # print("Generating train-test-split...")
+        # X, y = self.preprocessor.generate_split(self.data, test_size=0.8)
 
         print(f"Fitting {self.model} model to training data of bucket...")
-        self.model.fit(X, y)
+        self.model.fit(self.X, self.y)

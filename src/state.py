@@ -8,6 +8,7 @@ class State:
         id,
         activities: list[str],
         representation: str,
+        x_cols: list[str],
         y_col: str,
         encoding_operation: str = None,
         model_type: str = None,
@@ -27,8 +28,9 @@ class State:
         self.rep = representation
         self.id = id
         self.bucket = Bucket(
-            y_col,
-            [],
+            x_cols=x_cols,
+            y_col=y_col,
+            data=[],  # is empty as we fill this on-the-go and transform to pd.DataFrame upon completion
             encoding_operation=encoding_operation,
             model_type=model_type,
             seed=seed,
@@ -39,7 +41,6 @@ class State:
     def add_event(self, row: dict):
 
         self.bucket.append(row)
-        # pass
 
     def add_subseq_state(self, state_id):
 
@@ -51,8 +52,10 @@ class State:
 
     def predict(self, event) -> float:
 
+        # MOET NOG VERANDEREN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         pp = Preprocessor(
-            self.bucket.preprocessor.y_col, self.bucket.preprocessor.encoding_operation
+            self.bucket.y_col, self.bucket.preprocessor.encoding_operation
         )
         event = pp.prepare_for_prediction(event, self.bucket.x_cols)
 

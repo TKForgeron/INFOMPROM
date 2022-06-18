@@ -1,5 +1,5 @@
 # Print iterations progress
-def printProgressBar(
+def print_progress_bar(
     iteration,
     total,
     prefix="",

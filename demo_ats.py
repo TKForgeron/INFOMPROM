@@ -63,10 +63,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 data_train = pd.concat([X_train, y_train], axis=1)
 
-
 # data_train = data[~data["Incident ID"].isin(["IM0000042"])]
 # data_test = data[data["Incident ID"].isin(["IM0000042"])]
-
 
 ats = ATS(
     "Incident ID",
@@ -83,7 +81,7 @@ try:
         ats = pickle.load(file)
 except:
     print("Reading ATS from pickle failed")
-    ats.create_ATS(data_train)
+    ats.fit(X, y)
     # ats.print()
     ats.finalize()
     ats.save(ATS_OUT_FILE)

@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 from src.state import State
-from src.helper import printProgressBar
+from src.helper import print_progress_bar
 import pickle
 
 
@@ -10,7 +10,7 @@ class ATS:
         self,
         trace_id_col: str,
         act_col: str,
-        y_col: str,
+        # y_col: str,
         representation: str = "trace",
         horizon: int = sys.maxsize,
         filter_out: list = [],
@@ -30,10 +30,21 @@ class ATS:
         self.filter_out = filter_out
 
         self.model_type = model_type
-        self.y_col = y_col
+
+        self.x_cols = []
+        self.y_col = ""
+        self.encoding_operation = encoding_operation
 
         empty_state = State(
-            0, [], representation, y_col, encoding_operation, model_type, seed, cv
+            0,
+            [],
+            representation,
+            self.x_cols,
+            self.y_col,
+            encoding_operation,
+            model_type,
+            seed,
+            cv,
         )
         self.states = [empty_state]
 
@@ -109,7 +120,13 @@ class ATS:
         state_id = len(self.states)
         self.states.append(
             State(
-                state_id, activities, self.rep, self.y_col, model_type=self.model_type
+                id=state_id,
+                activities=activities,
+                representation=self.rep,
+                x_cols=self.x_cols,
+                y_col=self.y_col,
+                encoding_operation=self.encoding_operation,
+                model_type=self.model_type,
             )
         )
 
@@ -165,15 +182,13 @@ class ATS:
                 else:
                     state_id = next_state_id
 
-                curr_state.add_subseq_state(
-                    state_id
-                )  # <<<<<<<<<<werk je overal met inplace?>>>>>>>>>>
+                curr_state.add_subseq_state(state_id)
 
             curr_state = self.states[next_state_id]
 
             curr_state.add_event(event)
 
-    def create_ATS(self, df: pd.DataFrame) -> None:
+    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         """
         Main function that creates the ATS given an event log.
 
@@ -182,17 +197,19 @@ class ATS:
             df : pd.Dataframe
                 The event log
         """
+        self.x_cols = X.columns.tolist()
+        self.y_col = y.name
 
-        grouped = df.groupby(self.trace_id_col)
+        grouped = X.groupby(self.trace_id_col)
 
         length = len(grouped)
         i = 0
 
-        printProgressBar(0, length, prefix="Create:", suffix="Complete", length=50)
+        print_progress_bar(0, length, prefix="Create:", suffix="Complete", length=50)
         for name, group in grouped:
             self.add_trace(group.to_dict("records"))
 
-            printProgressBar(
+            print_progress_bar(
                 i + 1, length, prefix="Create:", suffix="Complete", length=50
             )
             i += 1
@@ -209,13 +226,13 @@ class ATS:
 
         with open("data/ATS_output.txt", "w") as text_file:
 
-            printProgressBar(
+            print_progress_bar(
                 0, len(self.states), prefix="Print:", suffix="Complete", length=50
             )
 
             for i, state in enumerate(self.states):
 
-                printProgressBar(
+                print_progress_bar(
                     i, len(self.states), prefix="Print:", suffix="Complete", length=50
                 )
                 print(f"id: {state.id}", file=text_file)
@@ -298,13 +315,13 @@ class ATS:
 
         """
 
-        printProgressBar(
+        print_progress_bar(
             0, len(self.states), prefix="Finalize:", suffix="Complete", length=50
         )
 
         for i, state in enumerate(self.states):
 
-            printProgressBar(
+            print_progress_bar(
                 i, len(self.states), prefix="Finalize:", suffix="Complete", length=50
             )
             state.finalize()
