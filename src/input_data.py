@@ -121,7 +121,6 @@ class InputData:
         self, 
         agg_col: str, 
         filter_incompletes: bool = True,
-        convert_times: bool = True,
         date_cols: list[str] = []
 
     ) -> None:
@@ -139,11 +138,7 @@ class InputData:
 
         # if "prev_events" in agg_cols:
         #     self._add_prev_events()
-        if convert_times:
-            if not date_cols:
-                raise AssertionError(
-                    "ERROR: No columns for date conversions were given!"
-                )
+        if date_cols:
             self._convert_times(date_cols)
 
         if agg_col == "rem_time":
@@ -198,15 +193,12 @@ class InputData:
 
 
 
-
-
 if __name__ == "__main__":
 
     input = InputData(FILENAME)
     input.apply_standard_preprocessing(agg_col='rem_time', # calculated y column
                                        filter_incompletes = True,
-                                       convert_times= True, 
-                                       date_cols = DATE_COLS # must be given when "convert_times is true"
+                                       date_cols = DATE_COLS # list of cols that must be transformed. If empty / not given, nothing will be transformed
                                        )
     
     input.use_cat_encoding_on('ohe', ['Priority']) # can be a list of features that need ohe
