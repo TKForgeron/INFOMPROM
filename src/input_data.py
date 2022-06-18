@@ -6,6 +6,7 @@ import numpy as np
 from pandasql import sqldf
 from categorical_encoders import *
 import random
+import pickle
 
 FILENAME = "incidentProcess_custom.csv"
 
@@ -111,6 +112,10 @@ class InputData:
         elif file == "pickle":
             print_df.to_pickle(f"data/{name}.pkl")
 
+    def save(self, name: str = "inputDataObject"):
+
+        filehandler = open(f"data/{name}.pkl", "wb")
+        pickle.dump(self, filehandler)
 
     def apply_standard_preprocessing(
         self, 
@@ -184,7 +189,7 @@ class InputData:
         print(train_Y.shape)
         print(test_Y.shape)
 
-        return train_data, test_data, train_Y, test_Y
+        return train_data.copy(), test_data.copy(), train_Y.copy(), test_Y.copy()
 
 
 
@@ -203,19 +208,36 @@ class InputData:
 if __name__ == "__main__":
 
     input = InputData(FILENAME)
-    input.apply_standard_preprocessing('rem_time', date_cols = DATE_COLS)
+    input.apply_standard_preprocessing(agg_col='rem_time', # calculated y column
+                                       filter_incompletes = True,
+                                       convert_times= True, 
+                                       date_cols = DATE_COLS # must be given when "convert_times is true"
+                                       )
     
-    input.use_cat_encoding_on('ohe', ['Priority'])
-    input.use_cat_encoding_on('label', ['Category'])
-    input.use_cat_encoding_on('none', ['Service Affected'])
+    input.use_cat_encoding_on('ohe', ['Priority']) # can be a list of features that need ohe
+    input.use_cat_encoding_on('label', ['Category']) # can be a list of features that need label / numerical encoding
+    input.use_cat_encoding_on('none', ['Service Affected']) # list of features that need to be deleted
 
-    input.save_df(n_rows=20)
+    input.save_df(n_rows=20) # save function with new "n_rows" feature that ensures opening in vscode
 
-    train_X, test_X, train_Y, test_Y = input.split_test_train("RemainingTime")
+    input.save()
 
-    test_X = input.add_prev_events(test_X)
+    # split function that keeps traces together
+    train_X, test_X, train_Y, test_Y = input.split_test_train(y_col= "RemainingTime",
+                                                              ratio = 0.8 # ratio train/test data
+    ) 
 
-    print(test_X.head(10))
+    # with open(f"data/inputDataObject.pkl", "rb") as obj:
+    #     input = pickle.load(obj)
+
+    # # split function that keeps traces together
+    # train_X, test_X, train_Y, test_Y = input.split_test_train(y_col= "RemainingTime",
+    #                                                           ratio = 0.8 # ratio train/test data
+    #                                                           ) 
+
+
+    # test_X = input.add_prev_events(test_X) #self explanatory
+
 
 
 
