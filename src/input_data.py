@@ -62,7 +62,7 @@ class InputData:
 
     def filter_incomplete_processes(self):
 
-        print("Filtering out incomplete processes..")
+        print("Filtering out incomplete cases..")
 
         df1 = self.df
         q = """
@@ -77,6 +77,50 @@ class InputData:
                                     where Activity = 'Close')
         """
         self.df = sqldf(q)
+
+    def filter_incomplete_processes2(self):
+
+        print("Filtering out incomplete processes..", end='')
+
+        df1 = self.df
+
+        size = len(df1)
+
+        q = """
+            SELECT *
+            FROM df1
+            WHERE  `Incident ID`  IN (SELECT `Incident ID`
+                                from df1 
+                                where `Incident ID` in ( select `Incident ID`  
+                                                        from df1
+                                                        where Activity = 'Open') 
+                                    AND `Incident ID` in ( select `Incident ID`  
+                                                        from df1
+                                                        where activity = 'Close')
+                                )
+                    AND `Incident ID` NOT IN (select `Incident ID`
+                                from df1 
+                                where  `Incident ID` in (
+                                                        select REOPEN.`Incident ID`
+                                                        FROM
+                                                        (select `Incident ID`,MAX(ActivityTimeStamp) AS ActivityTimeStamp,Activity
+                                                        from df1
+                                                        where  Activity = 'Re-open'
+                                                        GROUP BY `Incident ID`,Activity) REOPEN   
+                                                        JOIN
+                                            (select `Incident ID`,MAX(ActivityTimeStamp) AS ActivityTimeStamp,Activity
+                                            from df1
+                                            where  Activity = 'Close'
+                                            GROUP BY `Incident ID`,Activity) CLOSE
+                                            ON REOPEN.`Incident ID`=CLOSE.`Incident ID` AND strftime(REOPEN.ActivityTimeStamp,'yyyy-mm-dd hh24:mi:ss.ff')>strftime(CLOSE.ActivityTimeStamp,'yyyy-mm-dd hh24:mi:ss.ff')
+                                            ))
+            """
+    
+        self.df = sqldf(q)
+
+        print(f" [{size - len(self.df)} rows have been deleted...]")
+
+
 
     def add_agg_col(self, aggregation: str = "rem_time") -> None:
 
@@ -120,10 +164,12 @@ class InputData:
             raise AssertionError("Please choose another aggregation column")
 
         if dropna:
+            drop_var = len(self.df)
             self.df = self.df.dropna(axis="index")
+            print(f"Dropping n/a's..  [{drop_var - len(self.df)} rows deleted]")
 
         if filter_incompletes:
-            self.filter_incomplete_processes()
+            self.filter_incomplete_processes2()
 
         # if "prev_events" in agg_cols:
         #     self._add_prev_events()

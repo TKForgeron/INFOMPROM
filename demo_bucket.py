@@ -104,8 +104,15 @@ if __name__ == "__main__":
         model=LinearRegression(),
     )
     bucket.finalize()
-    y_pred = bucket.predict(X_test)
-    print(y_pred[:5])
+    # y_pred = bucket.predict(X_test)
+    # print(y_pred[:5])
+
+
+
+
+
+
+
 
     # Nodig voor ATS of preprocessing:
     # Incident ID

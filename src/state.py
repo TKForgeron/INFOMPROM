@@ -1,5 +1,4 @@
 from src.bucket import Bucket
-from src.bucket_preprocessor import Preprocessor
 
 
 class State:
@@ -8,10 +7,8 @@ class State:
         id,
         activities: list[str],
         representation: str,
-        x_cols: list[str],
         y_col: str,
         model,
-        encoding_operation: str = None,
         seed: int = None,
         cv: int = None,
     ) -> None:
@@ -28,49 +25,36 @@ class State:
         self.rep = representation
         self.id = id
         self.bucket = Bucket(
-            id=id,
-            x_cols=x_cols,
             y_col=y_col,
-            data=[],  # is empty as we fill this on-the-go and transform to pd.DataFrame upon completion
-            encoding_operation=encoding_operation,
             model=model,
             seed=seed,
             cv=cv,
         )
         self.subsequent_states = []
 
-    def add_event(self, row: dict):
 
-        self.bucket.append(row)
+    def add_event(self, row: dict, y_val: int):
+
+        self.bucket.append(row, y_val=y_val)
+
 
     def add_subseq_state(self, state_id):
 
         self.subsequent_states.append(state_id)
 
+
     def equals_state(self, activities):
 
         return self.activities == activities
 
+
     def predict(self, event) -> float:
 
-        # MOET NOG VERANDEREN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        pp = Preprocessor(
-            self.bucket.y_col, self.bucket.preprocessor.encoding_operation
-        )
-        event = pp.prepare_for_prediction(event, self.bucket.x_cols)
-
-        print(f"Predicting remaining time using {self.bucket.model} model")
         y_pred = self.bucket.predict_one(event)
 
-        # dit is wat we zometeen moeten runnen en dan kunnen we kijken of het overeen komt met de avg in de ats_output.txt
-        print(f"state {self.id} predicts: {y_pred}")
+        # print(f"state {self.id} predicts: {y_pred / (60*60)} hour")
         return y_pred
-        # print(
-        #     f"PREDICT -> INCIDENT: {event['Incident ID']} in STATE ID: {self.id}\n-- PE: {event['PrevEvents']}"
-        # )
 
-        # return 1  # placeholder value
 
     def finalize(self):
 

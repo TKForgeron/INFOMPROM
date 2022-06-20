@@ -1,6 +1,6 @@
 import warnings
 import pandas as pd
-
+import copy
 
 class AalstModel:
     def __init__(
@@ -33,9 +33,14 @@ class AalstModel:
 
         return self
 
+    def copy(self):
+        return copy.deepcopy(self)
+
+
     def predict(self, X: pd.DataFrame):
         if self.prediction is None:
             warnings.warn("Model has not been fitted yet")
+
         return [self.prediction] * X.shape[0]
 
 

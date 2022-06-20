@@ -3,6 +3,10 @@ import pandas as pd
 from src.state import State
 from src.helper import print_progress_bar
 import pickle
+import datetime
+
+
+
 
 
 class ATS:
@@ -10,11 +14,11 @@ class ATS:
         self,
         trace_id_col: str,
         act_col: str,
+        y_col: str,
         model,
         representation: str = "trace",
-        horizon: int = sys.maxsize,
+        horizon: int = sys.maxsize, #infite
         filter_out: list = [],
-        encoding_operation: str = None,
         seed: int = 42,
         cv: int = 5,
     ) -> None:
@@ -23,6 +27,8 @@ class ATS:
 
         self.trace_id_col = trace_id_col
         self.act_col = act_col
+        self.y_col = y_col
+
 
         self.rep = representation
         self.horizon = horizon
@@ -30,17 +36,17 @@ class ATS:
 
         self.model = model
 
-        self.x_cols = []
-        self.y_col = ""
-        self.encoding_operation = encoding_operation
+
+        self.seed = seed
+        self.cv = cv
+
+        self.finalized = 0
 
         empty_state = State(
             0,
             [],
             representation,
-            self.x_cols,
             self.y_col,
-            encoding_operation,
             model,
             seed,
             cv,
@@ -122,10 +128,10 @@ class ATS:
                 id=state_id,
                 activities=activities,
                 representation=self.rep,
-                x_cols=self.x_cols,
                 y_col=self.y_col,
-                encoding_operation=self.encoding_operation,
                 model=self.model,
+                seed=self.seed,
+                cv=self.cv
             )
         )
 
@@ -147,7 +153,8 @@ class ATS:
 
         return act.copy()
 
-    def add_trace(self, trace: list[dict]) -> None:
+    def add_trace(self, trace: list[dict], y_vals) -> None:
+        
         """
         This function, given a trace (i.e., events that belong to the same incident),
         creates all the required states.
@@ -161,13 +168,18 @@ class ATS:
         activities = []
 
         curr_state = self.states[0]
-        curr_state.add_event(trace[0])
+        curr_state.add_event(trace[0], y_vals[0])
 
-        for event in trace:
+        # act = []
+        for i, event in enumerate(trace):
+
+            y_val = y_vals[i]
 
             activities.append(event[self.act_col])
 
+
             activities = self.transform_rep(activities.copy())
+
 
             next_state_id, make_new_edge = self.check_existing_states(
                 activities, curr_state.subsequent_states
@@ -185,7 +197,8 @@ class ATS:
 
             curr_state = self.states[next_state_id]
 
-            curr_state.add_event(event)
+            curr_state.add_event(event, y_val)
+            
 
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         """
@@ -206,7 +219,12 @@ class ATS:
 
         print_progress_bar(0, length, prefix="Create:", suffix="Complete", length=50)
         for name, group in grouped:
-            self.add_trace(group.to_dict("records"))
+            
+            y = group.pop(self.y_col).tolist()
+            X = group.to_dict("records")
+            
+            # self.add_trace(group.to_dict("records"))
+            self.add_trace(X, y)
 
             print_progress_bar(
                 i + 1, length, prefix="Create:", suffix="Complete", length=50
@@ -229,10 +247,12 @@ class ATS:
                 0, len(self.states), prefix="Print:", suffix="Complete", length=50
             )
 
+            print(f"Output file created on: {datetime.datetime.now()}", file=text_file)
+
             for i, state in enumerate(self.states):
 
                 print_progress_bar(
-                    i, len(self.states), prefix="Print:", suffix="Complete", length=50
+                    i+1, len(self.states), prefix="Print:", suffix="Complete", length=50
                 )
                 print(f"id: {state.id}", file=text_file)
                 print(f"activities: {state.activities}", file=text_file)
@@ -241,13 +261,17 @@ class ATS:
 
                 print("Data:", file=text_file)
 
-                for row in state.bucket.data:
+                if self.finalized == 0:
+                    for row in state.bucket.X:
 
-                    print(row, file=text_file)
+                        print(row, file=text_file)
+                else:
+                    print(state.bucket.X, file=text_file)
+                    print(state.bucket.y, file=text_file)
 
                 print("\n--------------------------------------\n", file=text_file)
 
-        print("\n")  # some weird bug in the progress
+        print("\n")  # some weird bug in the progress bar
 
     def predict(self, event: dict) -> float:
 
@@ -274,59 +298,54 @@ class ATS:
         state = self.states[0]
         state_id = 0
 
-        # print("\n--------------------------------")
-        # print(f"ID: {event['Incident ID']} acts: {event['PrevEvents']}")
-        print(event)
-        print(event["PrevEvents"])
         for l in range(1, len(event["PrevEvents"]) + 1):
 
             sub_seq = state.subsequent_states
 
             search_term = event["PrevEvents"][:l]
             search_term = self.transform_rep(search_term)
-            # print(f"o- ST: {search_term}  ")
 
             next_state = 0
 
             for s in sub_seq:
-                # print(f"--- RESEARCH state {s}: {self.states[s].activities}")
                 if self.states[s].activities == search_term:
                     state = self.states[s]
                     state_id = s
                     next_state = 1
                     break
 
-            # if next_state == 0:
-            #     print(f"NOTHING FOUND. Finished with state {state_id}")
-            # else:
-            #     print(f"NEXT -> ID: {state_id} | SA: {state.activities}")
 
             if event["PrevEvents"] == state.activities or next_state == 0:
-                # print(f"(OPTIMAL) STATE {state_id} FOR PREDICTION FOUND!")
 
                 return state.predict(event)
 
         return state.predict(event)
 
-    def finalize(self) -> None:
+    def finalize(self, progress_bar=True) -> None:
         """
         This function finalizes the ATS such that can work as
         a prediction model.
 
         """
 
-        print_progress_bar(
-            0, len(self.states), prefix="Finalize:", suffix="Complete", length=50
-        )
+        self.finalized = 1
+
+        if progress_bar:
+            print_progress_bar(
+                0, len(self.states), prefix="Finalize:", suffix="Complete", length=50
+            )
 
         for i, state in enumerate(self.states):
-
-            print_progress_bar(
-                i, len(self.states), prefix="Finalize:", suffix="Complete", length=50
-            )
+            
+            if progress_bar:
+                print_progress_bar(
+                    i+1, len(self.states), prefix="Finalize:", suffix="Complete", length=50
+                )
             state.finalize()
 
-        print("\n")
+        if progress_bar:
+
+            print("\n")
 
     def save(self, name: str = "ats"):
 
