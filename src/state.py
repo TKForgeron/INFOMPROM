@@ -55,11 +55,6 @@ class State:
 
         # MOET NOG VERANDEREN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        pp = Preprocessor(
-            self.bucket.y_col, self.bucket.preprocessor.encoding_operation
-        )
-        event = pp.prepare_for_prediction(event, self.bucket.x_cols)
-
         print(f"Predicting remaining time using {self.bucket.model} model")
         y_pred = self.bucket.predict_one(event)
 
@@ -69,8 +64,6 @@ class State:
         # print(
         #     f"PREDICT -> INCIDENT: {event['Incident ID']} in STATE ID: {self.id}\n-- PE: {event['PrevEvents']}"
         # )
-
-        # return 1  # placeholder value
 
     def finalize(self):
 

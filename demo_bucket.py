@@ -67,7 +67,7 @@ if __name__ == "__main__":
         # columns that have <20 unique values are one-hot encoded
         input.use_cat_encoding_on(
             "ohe", ["Priority", "Asset Type Affected", "Status", "Closure Code"]
-        ) 
+        )
 
         # columns that have have ordinal values are label encoded
         input.use_cat_encoding_on("label", ["Category"])
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         )
 
         input.save_df(
-            n_rows=20
+            n_rows=50
         )  # save function with new "n_rows" feature that ensures opening in vscode
 
         input.save(INPUTDATA_OBJECT)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         y_col=TARGET_COLUMN, ratio=0.1, seed=RANDOM_SEED
     )
 
-    # X_test = input.add_prev_events(X_test)  # self explanatory
+    X_test = input.add_prev_events(X_test)  # self explanatory
 
     bucket = Bucket(
         id=1,

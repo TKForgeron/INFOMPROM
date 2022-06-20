@@ -72,7 +72,7 @@ if __name__ == "__main__":
         y_col=TARGET_COLUMN, ratio=0.05, seed=RANDOM_SEED
     )
 
-    # X_test = input.add_prev_events(X_test)  # self explanatory
+    X_test = input.add_prev_events(X_test)  # self explanatory
 
     ats = ATS(
         trace_id_col="Incident ID",
