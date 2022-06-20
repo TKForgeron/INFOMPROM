@@ -67,12 +67,16 @@ if __name__ == "__main__":
         y_col=TARGET_COLUMN, ratio=0.2, seed=RANDOM_SEED
     )
 
+<<<<<<< HEAD
     X_test = input.add_prev_events(X_test)
 
     # X_test = X_test[~["activity"]]
     # X_train = X_train[~["activity"]]
 
     # X_test = input.add_prev_events(X_test)  # self explanatory
+=======
+    X_test = input.add_prev_events(X_test)  # self explanatory
+>>>>>>> ae4dfe790add0713ea702e9da1203281ecf82e6a
 
     ats = ATS(
         trace_id_col="Incident ID",
