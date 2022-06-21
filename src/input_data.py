@@ -39,6 +39,17 @@ class InputData:
             - self.df["ActivityTimeStamp"]
         )
 
+    def _add_running_time(self) -> None:
+
+        print("Adding running time attribute..")
+
+        self.df["RunningTime"] = (
+            self.df["ActivityTimeStamp"] 
+            - self.df.groupby("Incident ID")["ActivityTimeStamp"].transform("min")
+            
+        )
+
+
     def _add_remaining_act(self) -> None:
 
         print("Adding remaining activities attribute..")
@@ -46,6 +57,15 @@ class InputData:
         self.df["RemainingActivities"] = self.df.groupby("Incident ID").cumcount(
             ascending=False
         )
+
+    def _add_past_act(self) -> None:
+
+        print("Adding remaining activities attribute..")
+
+        self.df["CurrentActivities"] = self.df.groupby("Incident ID").cumcount(
+            ascending=True
+        )
+
 
     def add_prev_events(self, data) -> None:
 
@@ -216,3 +236,44 @@ class InputData:
         test_Y = test_data.pop(y_col)
 
         return train_data.copy(), test_data.copy(), train_Y.copy(), test_Y.copy()
+
+    def calculate_naive_MAE(self):
+
+        self.use_cat_encoding_on(
+            "none",
+            [
+                "Service Affected",
+                "Asset SubType Affected",
+                "Service Caused",
+                "Assignment Group",
+                "Priority", "Asset Type Affected", "Status", "Closure Code",
+                "Asset Caused","Asset Type Caused","Asset SubType Caused",
+                "Asset Affected","Impact","Urgency","Category","Number of Reassignments","Open Time",
+                "Reopen Time","Resolved Time","Close Time","Handle Time (Hours)"
+            ],
+        )
+
+        self.filter_incomplete_processes2()
+
+        self._convert_times(["ActivityTimeStamp"])
+
+        self._add_remaining_time()
+
+        self._add_running_time()
+
+        self.df['y_time_hat'] = self.df.apply(lambda x: 401068.6272 - x.RunningTime, axis=1)
+
+        self.df['AE_time'] = self.df.apply(lambda x: abs(x.y_time_hat - x.RemainingTime), axis=1)
+
+        self.df['AE_time_days'] = self.df.apply(lambda x: abs(x.AE_time / (24*60*60)), axis=1)
+
+        self._add_remaining_act()
+
+        self._add_past_act()
+
+        self.df['y_hat_activities'] = self.df.apply(lambda x: 6.547236 - x.CurrentActivities, axis=1)
+
+        self.df['AE_activities'] = self.df.apply(lambda x: abs(x.y_hat_activities - x.RemainingActivities), axis=1)
+
+    
+
