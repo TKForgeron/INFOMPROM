@@ -6,9 +6,6 @@ import pickle
 import datetime
 
 
-
-
-
 class ATS:
     def __init__(
         self,
@@ -17,7 +14,7 @@ class ATS:
         y_col: str,
         model,
         representation: str = "trace",
-        horizon: int = sys.maxsize, #infite
+        horizon: int = sys.maxsize,  # infite
         filter_out: list = [],
         seed: int = 42,
         cv: int = 5,
@@ -29,18 +26,16 @@ class ATS:
         self.act_col = act_col
         self.y_col = y_col
 
-
         self.rep = representation
         self.horizon = horizon
         self.filter_out = filter_out
 
         self.model = model
 
-
         self.seed = seed
         self.cv = cv
 
-        self.finalized = 0
+        self.finalized = False
 
         empty_state = State(
             0,
@@ -131,7 +126,7 @@ class ATS:
                 y_col=self.y_col,
                 model=self.model,
                 seed=self.seed,
-                cv=self.cv
+                cv=self.cv,
             )
         )
 
@@ -154,7 +149,7 @@ class ATS:
         return act.copy()
 
     def add_trace(self, trace: list[dict], y_vals) -> None:
-        
+
         """
         This function, given a trace (i.e., events that belong to the same incident),
         creates all the required states.
@@ -177,9 +172,7 @@ class ATS:
 
             activities.append(event[self.act_col])
 
-
             activities = self.transform_rep(activities.copy())
-
 
             next_state_id, make_new_edge = self.check_existing_states(
                 activities, curr_state.subsequent_states
@@ -198,7 +191,6 @@ class ATS:
             curr_state = self.states[next_state_id]
 
             curr_state.add_event(event, y_val)
-            
 
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         """
@@ -219,10 +211,10 @@ class ATS:
 
         print_progress_bar(0, length, prefix="Create:", suffix="Complete", length=50)
         for name, group in grouped:
-            
+
             y = group.pop(self.y_col).tolist()
             X = group.to_dict("records")
-            
+
             # self.add_trace(group.to_dict("records"))
             self.add_trace(X, y)
 
@@ -233,7 +225,7 @@ class ATS:
 
         print("\n")
 
-    def print(self) -> None:
+    def print(self) -> None:  # would call to_txt()
         """
 
         Function that prints the (Annotated) Transition System to
@@ -252,7 +244,11 @@ class ATS:
             for i, state in enumerate(self.states):
 
                 print_progress_bar(
-                    i+1, len(self.states), prefix="Print:", suffix="Complete", length=50
+                    i + 1,
+                    len(self.states),
+                    prefix="Print:",
+                    suffix="Complete",
+                    length=50,
                 )
                 print(f"id: {state.id}", file=text_file)
                 print(f"activities: {state.activities}", file=text_file)
@@ -261,7 +257,7 @@ class ATS:
 
                 print("Data:", file=text_file)
 
-                if self.finalized == 0:
+                if not self.finalized:
                     for row in state.bucket.X:
 
                         print(row, file=text_file)
@@ -314,7 +310,6 @@ class ATS:
                     next_state = 1
                     break
 
-
             if event["PrevEvents"] == state.activities or next_state == 0:
 
                 return state.predict(event)
@@ -328,7 +323,7 @@ class ATS:
 
         """
 
-        self.finalized = 1
+        self.finalized = True
 
         if progress_bar:
             print_progress_bar(
@@ -336,10 +331,14 @@ class ATS:
             )
 
         for i, state in enumerate(self.states):
-            
+
             if progress_bar:
                 print_progress_bar(
-                    i+1, len(self.states), prefix="Finalize:", suffix="Complete", length=50
+                    i + 1,
+                    len(self.states),
+                    prefix="Finalize:",
+                    suffix="Complete",
+                    length=50,
                 )
             state.finalize()
 

@@ -32,41 +32,29 @@ class State:
         )
         self.subsequent_states = []
 
-
     def add_event(self, row: dict, y_val: int):
 
         self.bucket.append(row, y_val=y_val)
-
 
     def add_subseq_state(self, state_id):
 
         self.subsequent_states.append(state_id)
 
-
     def equals_state(self, activities):
 
         return self.activities == activities
 
-
     def predict(self, event) -> float:
 
-<<<<<<< HEAD
-=======
         # MOET NOG VERANDEREN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         print(f"Predicting remaining time using {self.bucket.model} model")
->>>>>>> ae4dfe790add0713ea702e9da1203281ecf82e6a
         y_pred = self.bucket.predict_one(event)
 
         # print(f"state {self.id} predicts: {y_pred / (60*60)} hour")
         return y_pred
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ae4dfe790add0713ea702e9da1203281ecf82e6a
     def finalize(self):
 
         self.bucket.finalize()
-        # pass
         # print(f"Some method that prepares the state {self.id} bucket for prediction")

@@ -51,8 +51,13 @@ if __name__ == "__main__":
                 "Asset SubType Affected",
                 "Service Caused",
                 "Assignment Group",
-                "Priority", "Asset Type Affected", "Status", "Closure Code",
-                "Asset Caused","Asset Type Caused","Asset SubType Caused"
+                "Priority",
+                "Asset Type Affected",
+                "Status",
+                "Closure Code",
+                "Asset Caused",
+                "Asset Type Caused",
+                "Asset SubType Caused",
             ],
         )
 
@@ -67,16 +72,7 @@ if __name__ == "__main__":
         y_col=TARGET_COLUMN, ratio=0.2, seed=RANDOM_SEED
     )
 
-<<<<<<< HEAD
-    X_test = input.add_prev_events(X_test)
-
-    # X_test = X_test[~["activity"]]
-    # X_train = X_train[~["activity"]]
-
-    # X_test = input.add_prev_events(X_test)  # self explanatory
-=======
     X_test = input.add_prev_events(X_test)  # self explanatory
->>>>>>> ae4dfe790add0713ea702e9da1203281ecf82e6a
 
     ats = ATS(
         trace_id_col="Incident ID",
@@ -93,15 +89,11 @@ if __name__ == "__main__":
 
     ats.save(ATS_OUT_FILE)
 
-
-
-
     diff = 0.0
 
     print_progress_bar(
         0, len(y_test), prefix="Prediction:", suffix="Complete", length=50
     )
-
 
     for i, event in enumerate(X_test.to_dict(orient="records")):
 
@@ -112,7 +104,7 @@ if __name__ == "__main__":
         # print(f" --> diff: {round(diff / (60*60))}, y_pred: {round(y_pred / (60*60))}, y_real: {round(y_test.iloc[i] / (60*60))}")
 
         print_progress_bar(
-            i+1, len(y_test), prefix="Prediction:", suffix="Complete", length=50
+            i + 1, len(y_test), prefix="Prediction:", suffix="Complete", length=50
         )
 
         # if i == 5:
@@ -120,4 +112,6 @@ if __name__ == "__main__":
 
     diff = diff / len(y_test)
 
-    print(f"MAE: {round(diff / (60*60))} hours  = {round(diff / (60*60*24))} days") #get difference in hours instead of seconds
+    print(
+        f"MAE: {round(diff / (60*60))} hours  = {round(diff / (60*60*24))} days"
+    )  # get difference in hours instead of seconds
