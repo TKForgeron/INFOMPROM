@@ -64,32 +64,29 @@ if __name__ == "__main__":
 
     # split function that keeps traces together
     X_train, X_test, y_train, y_test = input.train_test_split_on_trace(
-        y_col=TARGET_COLUMN, ratio=0.2, seed=RANDOM_SEED
+        y_col=TARGET_COLUMN, ratio=0.8, seed=RANDOM_SEED
     )
 
-<<<<<<< HEAD
     X_test = input.add_prev_events(X_test)
 
     # X_test = X_test[~["activity"]]
     # X_train = X_train[~["activity"]]
 
     # X_test = input.add_prev_events(X_test)  # self explanatory
-=======
-    X_test = input.add_prev_events(X_test)  # self explanatory
->>>>>>> ae4dfe790add0713ea702e9da1203281ecf82e6a
 
     ats = ATS(
         trace_id_col="Incident ID",
         act_col="Activity",
         y_col="RemainingTime",
         representation="multiset",
-        model=Average(),
+        horizon=1,
+        model=HistGradientBoostingRegressor(),
         seed=RANDOM_SEED,
     )
 
     ats.fit(X_train, y_train)
     ats.finalize()
-    ats.print()
+    # ats.print()
 
     ats.save(ATS_OUT_FILE)
 
