@@ -103,7 +103,8 @@ Chosen business questions:
   - Reader's Guide
   1.  Related Work
   2.  Methodology
-  3.  Results
+  3.  Implementation (if we get extention
+  4.  Results
 - Conclusion
 - Discussion
   - Reader's Guide

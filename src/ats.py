@@ -125,7 +125,7 @@ class ATS:
                 activities=activities,
                 representation=self.rep,
                 y_col=self.y_col,
-                cols_to_drop=[self.trace_id_col,self.act_col],
+                cols_to_drop=[self.trace_id_col, self.act_col],
                 model=self.model,
                 seed=self.seed,
                 cv=self.cv,

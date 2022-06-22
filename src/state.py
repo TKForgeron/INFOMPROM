@@ -48,9 +48,6 @@ class State:
 
     def predict(self, event) -> float:
 
-        # MOET NOG VERANDEREN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        print(f"Predicting remaining time using {self.bucket.model} model")
         y_pred = self.bucket.predict_one(event)
 
         # print(f"state {self.id} predicts: {y_pred / (60*60)} hour")

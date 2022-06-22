@@ -1,6 +1,7 @@
 import pandas as pd
 from copy import deepcopy
 from sklearn.model_selection import cross_val_score
+from copy import deepcopy
 
 
 class Bucket:
@@ -31,10 +32,6 @@ class Bucket:
                 At initialization (in an ATS node) this is a list of dictionaries.
             y_col : [str]
                 Column name of the target variable.
-            x_cols : [list[str]]
-                Column names of the feature variables. Initially these are set by the
-                State. Upon encoding the data these are updated, as some columns may
-                be dropped or added.
             model : {Some estimator}
                 Estimator class that is passed. This class must have the methods:
                 fit() and predict().
@@ -44,8 +41,6 @@ class Bucket:
                 Determines the number of folds used in the cross-validation process.
 
         """
-
-        # for making predictions, model input should have cols equal to train data
 
         self.y_col = y_col
         self.X = []  # becomes pd.DataFrame
