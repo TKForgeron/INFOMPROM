@@ -1,5 +1,5 @@
-
 import pandas as pd
+from copy import deepcopy
 from sklearn.model_selection import cross_val_score
 
 
@@ -15,6 +15,7 @@ class Bucket:
     def __init__(
         self,
         y_col: str,
+        cols_to_drop: list[str],
         model,
         seed: int = None,
         cv: int = None,
@@ -45,12 +46,13 @@ class Bucket:
         """
 
         # for making predictions, model input should have cols equal to train data
-        
+
         self.y_col = y_col
         self.X = []  # becomes pd.DataFrame
         self.y = []  # becomes pd.Series
+        self.cols_to_drop = cols_to_drop
 
-        self.model = model.copy()
+        self.model = deepcopy(model)
         if seed is None:
             seed = 42
         if cv is None:
@@ -58,28 +60,25 @@ class Bucket:
         self.cv = cv
         self.mean_accuracy = None  # float
 
-
     def append(self, x_labels: dict, y_val: int) -> None:
 
         self.X.append(x_labels)
         self.y.append(y_val)
 
-
     def predict(self, pred_x: pd.DataFrame) -> list[float]:
 
-        pred_x = pred_x.drop(columns=['PrevEvents'])
+        x_cols = self.X.columns.tolist()
+        pred_x = pred_x[x_cols]
         return self.model.predict(pred_x)
-
 
     def predict_one(self, pred_x) -> float:
 
         formatted_x = pd.DataFrame([pred_x])
         return self.predict(formatted_x)[0]
 
-
     def finalize(self) -> None:
 
-        self.X = pd.DataFrame(self.X)
+        self.X = pd.DataFrame(self.X).drop(self.cols_to_drop, axis=1)
         self.y = pd.Series(self.y)
         self.y.name = self.y_col
 

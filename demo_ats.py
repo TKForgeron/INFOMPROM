@@ -30,6 +30,7 @@ DATE_COLS = [
 if __name__ == "__main__":
 
     try:
+        # raise Exception("tuning prep process")
         input = pd.read_pickle(f"data/{INPUTDATA_OBJECT}.pkl")
     except:
         input = InputData(PREPROCESSING_IN_FILE)
@@ -48,11 +49,13 @@ if __name__ == "__main__":
             "none",
             [
                 "Service Affected",
+                "Asset Affected",
                 "Asset SubType Affected",
                 "Service Caused",
                 "Assignment Group",
                 "Priority",
                 "Asset Type Affected",
+                "Category",
                 "Status",
                 "Closure Code",
                 "Asset Caused",
@@ -62,7 +65,7 @@ if __name__ == "__main__":
         )
 
         input.save_df(
-            # n_rows=20
+            n_rows=20
         )  # save function with new "n_rows" feature that ensures opening in vscode
 
         input.save(INPUTDATA_OBJECT)
@@ -79,7 +82,7 @@ if __name__ == "__main__":
         act_col="Activity",
         y_col="RemainingTime",
         representation="multiset",
-        model=Average(),
+        model=HistGradientBoostingRegressor(),
         seed=RANDOM_SEED,
     )
 

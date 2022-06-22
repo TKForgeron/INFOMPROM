@@ -8,6 +8,7 @@ class State:
         activities: list[str],
         representation: str,
         y_col: str,
+        cols_to_drop: list[str],
         model,
         seed: int = None,
         cv: int = None,
@@ -26,6 +27,7 @@ class State:
         self.id = id
         self.bucket = Bucket(
             y_col=y_col,
+            cols_to_drop=cols_to_drop,
             model=model,
             seed=seed,
             cv=cv,
