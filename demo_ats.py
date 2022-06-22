@@ -9,22 +9,17 @@ from sklearn.linear_model import (
     LogisticRegression,
     ElasticNetCV,
 )
+from sklearn.svm import SVR
 from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestRegressor
 from src.helper import print_progress_bar
-
-PREPROCESSING_IN_FILE = "incidentProcess_custom.csv"
-INPUTDATA_OBJECT = "inputDataObject"
-ATS_OUT_FILE = "ats"
-RANDOM_SEED = 42
-TARGET_COLUMN = "RemainingTime"
-
-DATE_COLS = [
-    "ActivityTimeStamp",
-    "Open Time",
-    "Reopen Time",
-    "Resolved Time",
-    "Close Time",
-]
+from src.globals import (
+    PREPROCESSING_IN_FILE,
+    INPUTDATA_OBJECT,
+    ATS_OUT_FILE,
+    RANDOM_SEED,
+    TARGET_COLUMN,
+    DATE_COLS,
+)
 
 
 if __name__ == "__main__":
