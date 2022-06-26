@@ -2,6 +2,7 @@ import warnings
 import pandas as pd
 import copy
 
+
 class AalstModel:
     def __init__(
         self,
@@ -32,10 +33,6 @@ class AalstModel:
         self.prediction = y.mean()
 
         return self
-
-    def copy(self):
-        return copy.deepcopy(self)
-
 
     def predict(self, X: pd.DataFrame):
         if self.prediction is None:
@@ -119,9 +116,10 @@ class Mode(AalstModel):
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
 
-        self.prediction = y.mode()
-        if self.prediction.size > 1:
-            self.prediction = self.prediction[-1]
+        self.prediction = y.mode().tolist()
+        if len(self.prediction) > 1:
+            # take the middle value (floored) of the list
+            self.prediction = self.prediction[len(self.prediction) // 2]
         else:
             self.prediction = self.prediction[0]
 

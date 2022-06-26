@@ -4,6 +4,7 @@ import pandas as pd
 from src.print_ats import *
 from src.input_data import InputData
 from src.custom_models import Average, Minimum, Maximum, SampleMean, Median, Mode
+from src.metrics import get_mae_mse
 from sklearn.linear_model import (
     LinearRegression,
     LogisticRegression,
@@ -36,8 +37,13 @@ if __name__ == "__main__":
             date_cols=DATE_COLS,  # list of cols that must be transformed. If empty / not given, nothing will be transformed
         )
 
+        # columns that have <20 unique values are one-hot encoded
+        input.use_cat_encoding_on(
+            "ohe", ["Priority", "Asset Type Affected", "Status", "Closure Code"]
+        )
+
         # # columns that have have ordinal values are label encoded
-        # input.use_cat_encoding_on("label", ["Category", "Activity"])
+        input.use_cat_encoding_on("label", ["Category"])
 
         # columns with too many categories are deleted
         input.use_cat_encoding_on(
@@ -48,11 +54,6 @@ if __name__ == "__main__":
                 "Asset SubType Affected",
                 "Service Caused",
                 "Assignment Group",
-                "Priority",
-                "Asset Type Affected",
-                "Category",
-                "Status",
-                "Closure Code",
                 "Asset Caused",
                 "Asset Type Caused",
                 "Asset SubType Caused",
@@ -72,10 +73,9 @@ if __name__ == "__main__":
 
     X_test = input.add_prev_events(X_test)
 
-    # X_test = X_test[~["activity"]]
-    # X_train = X_train[~["activity"]]
-
-    # X_test = input.add_prev_events(X_test)  # self explanatory
+    # IF ATS ALREADY BUILT
+    # with open(f"data/{ATS_OUT_FILE}.pkl", "rb") as file:
+    #     ats = pickle.load(file)
 
     ats = ATS(
         trace_id_col="Incident ID",
@@ -93,29 +93,33 @@ if __name__ == "__main__":
 
     ats.save(ATS_OUT_FILE)
 
-    diff = 0.0
+print_progress_bar(0, len(y_test), prefix="Prediction:", suffix="Complete", length=50)
 
+y_preds = []
+
+for i, event in enumerate(X_test.to_dict(orient="records")):
+
+    y_preds.append(ats.predict(event))
     print_progress_bar(
-        0, len(y_test), prefix="Prediction:", suffix="Complete", length=50
+        i + 1, len(y_test), prefix="Prediction:", suffix="Complete", length=50
     )
 
-    for i, event in enumerate(X_test.to_dict(orient="records")):
 
-        y_pred = ats.predict(event)
+# pickling y_test
+with open("data/y_test.pkl", "wb") as file:
+    pickle.dump(y_test, file)
 
-        diff += abs(y_pred - y_test.iloc[i])
+# pickling all predicted values into a pickled variable with name of the model used
+with open(f"data/y_preds_{ats.model}.pkl", "wb") as file:
+    pickle.dump(y_preds, file)
 
-        # print(f" --> diff: {round(diff / (60*60))}, y_pred: {round(y_pred / (60*60))}, y_real: {round(y_test.iloc[i] / (60*60))}")
 
-        print_progress_bar(
-            i + 1, len(y_test), prefix="Prediction:", suffix="Complete", length=50
-        )
+mae, mse = get_mae_mse(y_test.tolist(), y_preds)
 
-        # if i == 5:
-        #     break
-
-    diff = diff / len(y_test)
-
-    print(
-        f"MAE: {round(diff / (60*60))} hours  = {round(diff / (60*60*24))} days"
-    )  # get difference in hours instead of seconds
+print(ats.model)
+print(
+    f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days"
+)  # get difference in hours instead of seconds
+print(
+    f"MSE: {round(mse/ (60*60))} hours  = {round(mse / (60*60*24))} days"
+)  # get difference in hours instead of seconds
