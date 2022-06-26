@@ -43,12 +43,9 @@ class InputData:
 
         print("Adding running time attribute..")
 
-        self.df["RunningTime"] = (
-            self.df["ActivityTimeStamp"] 
-            - self.df.groupby("Incident ID")["ActivityTimeStamp"].transform("min")
-            
-        )
-
+        self.df["RunningTime"] = self.df["ActivityTimeStamp"] - self.df.groupby(
+            "Incident ID"
+        )["ActivityTimeStamp"].transform("min")
 
     def _add_remaining_act(self) -> None:
 
@@ -65,7 +62,6 @@ class InputData:
         self.df["CurrentActivities"] = self.df.groupby("Incident ID").cumcount(
             ascending=True
         )
-
 
     def add_prev_events(self, data) -> None:
 
@@ -100,11 +96,11 @@ class InputData:
 
     def filter_incomplete_processes2(self):
 
-        print("Filtering out incomplete processes..", end='')
+        print("Filtering out incomplete processes..", end="")
 
         df1 = self.df
 
-        size = len(df1)
+        size = df1.shape[0]
 
         q = """
             SELECT *
@@ -135,12 +131,10 @@ class InputData:
                                             ON REOPEN.`Incident ID`=CLOSE.`Incident ID` AND strftime(REOPEN.ActivityTimeStamp,'yyyy-mm-dd hh24:mi:ss.ff')>strftime(CLOSE.ActivityTimeStamp,'yyyy-mm-dd hh24:mi:ss.ff')
                                             ))
             """
-    
+
         self.df = sqldf(q)
 
-        print(f" [{size - len(self.df)} rows have been deleted...]")
-
-
+        print(f" [{size - self.df.shape[0]}/{size} rows have been deleted...]")
 
     def add_agg_col(self, aggregation: str = "rem_time") -> None:
 
@@ -173,8 +167,8 @@ class InputData:
     def apply_standard_preprocessing(
         self,
         agg_col: str,
-        filter_incompletes: bool = True,
         dropna: bool = False,
+        filter_incompletes: bool = True,
         date_cols: list[str] = [],
     ) -> None:
 
@@ -184,9 +178,14 @@ class InputData:
             raise AssertionError("Please choose another aggregation column")
 
         if dropna:
-            drop_var = len(self.df)
-            self.df = self.df.dropna(axis="index")
-            print(f"Dropping n/a's..  [{drop_var - len(self.df)} rows deleted]")
+            original_no_rows = self.df.shape[0]
+            original_no_cols = self.df.shape[1]
+            # self.df = self.df.dropna(axis="index")
+            # print(f"Dropping n/a's..  [{original_no_rows - self.df.shape[0]}/{original_no_rows} rows deleted]")
+            self.df = self.df.dropna(axis="columns")
+            print(
+                f"Dropping n/a's..  [{original_no_cols - self.df.shape[1]}/{original_no_cols} columns deleted]"
+            )
 
         if filter_incompletes:
             self.filter_incomplete_processes2()
@@ -246,10 +245,23 @@ class InputData:
                 "Asset SubType Affected",
                 "Service Caused",
                 "Assignment Group",
-                "Priority", "Asset Type Affected", "Status", "Closure Code",
-                "Asset Caused","Asset Type Caused","Asset SubType Caused",
-                "Asset Affected","Impact","Urgency","Category","Number of Reassignments","Open Time",
-                "Reopen Time","Resolved Time","Close Time","Handle Time (Hours)"
+                "Priority",
+                "Asset Type Affected",
+                "Status",
+                "Closure Code",
+                "Asset Caused",
+                "Asset Type Caused",
+                "Asset SubType Caused",
+                "Asset Affected",
+                "Impact",
+                "Urgency",
+                "Category",
+                "Number of Reassignments",
+                "Open Time",
+                "Reopen Time",
+                "Resolved Time",
+                "Close Time",
+                "Handle Time (Hours)",
             ],
         )
 
@@ -261,19 +273,26 @@ class InputData:
 
         self._add_running_time()
 
-        self.df['y_time_hat'] = self.df.apply(lambda x: 401068.6272 - x.RunningTime, axis=1)
+        self.df["y_time_hat"] = self.df.apply(
+            lambda x: 401068.6272 - x.RunningTime, axis=1
+        )
 
-        self.df['AE_time'] = self.df.apply(lambda x: abs(x.y_time_hat - x.RemainingTime), axis=1)
+        self.df["AE_time"] = self.df.apply(
+            lambda x: abs(x.y_time_hat - x.RemainingTime), axis=1
+        )
 
-        self.df['AE_time_days'] = self.df.apply(lambda x: abs(x.AE_time / (24*60*60)), axis=1)
+        self.df["AE_time_days"] = self.df.apply(
+            lambda x: abs(x.AE_time / (24 * 60 * 60)), axis=1
+        )
 
         self._add_remaining_act()
 
         self._add_past_act()
 
-        self.df['y_hat_activities'] = self.df.apply(lambda x: 6.547236 - x.CurrentActivities, axis=1)
+        self.df["y_hat_activities"] = self.df.apply(
+            lambda x: 6.547236 - x.CurrentActivities, axis=1
+        )
 
-        self.df['AE_activities'] = self.df.apply(lambda x: abs(x.y_hat_activities - x.RemainingActivities), axis=1)
-
-    
-
+        self.df["AE_activities"] = self.df.apply(
+            lambda x: abs(x.y_hat_activities - x.RemainingActivities), axis=1
+        )

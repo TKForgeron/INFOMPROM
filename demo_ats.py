@@ -26,14 +26,14 @@ from src.globals import (
 if __name__ == "__main__":
 
     try:
-        # raise Exception("tuning prep process")
+        raise Exception("tuning data prepprocessing step")
         input = pd.read_pickle(f"data/{INPUTDATA_OBJECT}.pkl")
     except:
         input = InputData(PREPROCESSING_IN_FILE)
         input.apply_standard_preprocessing(
             agg_col="rem_time",  # calculated y column
+            dropna=True,
             filter_incompletes=True,
-            dropna=False,
             date_cols=DATE_COLS,  # list of cols that must be transformed. If empty / not given, nothing will be transformed
         )
 
@@ -71,6 +71,11 @@ if __name__ == "__main__":
         y_col=TARGET_COLUMN, ratio=0.8, seed=RANDOM_SEED
     )
 
+    print(
+        f"xtrain: {X_train.shape}, xtest:{X_test.shape}, ytrain:{y_train.shape}, ytest: {y_test.shape}"
+    )
+
+    exit()
     X_test = input.add_prev_events(X_test)
 
     # IF ATS ALREADY BUILT
@@ -83,7 +88,7 @@ if __name__ == "__main__":
         y_col="RemainingTime",
         representation="multiset",
         horizon=1,
-        model=HistGradientBoostingRegressor(),
+        model=LinearRegression(),
         seed=RANDOM_SEED,
     )
 
