@@ -32,9 +32,10 @@ if __name__ == "__main__":
         input = InputData(PREPROCESSING_IN_FILE)
         input.apply_standard_preprocessing(
             agg_col="rem_time",  # calculated y column
-            dropna=True,
+            dropna=(True, 1),
             filter_incompletes=True,
-            date_cols=DATE_COLS,  # list of cols that must be transformed. If empty / not given, nothing will be transformed
+            date_cols="auto"
+            # date_cols=DATE_COLS,  # when list passed: those cols will be transformed, when empty: nothing will be transformed, when 'auto' passed: will automatically detect date cols and transform them
         )
 
         # columns that have <20 unique values are one-hot encoded
@@ -75,7 +76,6 @@ if __name__ == "__main__":
         f"xtrain: {X_train.shape}, xtest:{X_test.shape}, ytrain:{y_train.shape}, ytest: {y_test.shape}"
     )
 
-    exit()
     X_test = input.add_prev_events(X_test)
 
     # IF ATS ALREADY BUILT

@@ -1,3 +1,4 @@
+from msilib import type_binary
 import pandas as pd
 from pandasql import sqldf
 from src.categorical_encoders import *
@@ -19,16 +20,27 @@ class InputData:
     def set_df(self, df):
         self.df = df
 
-    def _convert_times(self, date_cols: list) -> None:
+    def _convert_times(self, date_cols: list = None) -> None:
 
         print("Converting dates.. ")
 
-        for col in date_cols:
+        if date_cols is None:
+            for col in self.df.columns:
+                if self.df[col].dtype == "object":
+                    try:
+                        self.df[col] = pd.to_datetime(self.df[col], errors="coerce")
+                        self.df[col] = (
+                            self.df[col] - pd.Timestamp("1970-01-01")
+                        ) // pd.Timedelta("1s")
+                    except ValueError:
+                        pass
+        else:
+            for col in date_cols:
 
-            self.df[col] = pd.to_datetime(self.df[col], errors="coerce")
-            self.df[col] = (self.df[col] - pd.Timestamp("1970-01-01")) // pd.Timedelta(
-                "1s"
-            )
+                self.df[col] = pd.to_datetime(self.df[col], errors="coerce")
+                self.df[col] = (
+                    self.df[col] - pd.Timestamp("1970-01-01")
+                ) // pd.Timedelta("1s")
 
     def _add_remaining_time(self) -> None:
 
@@ -167,7 +179,7 @@ class InputData:
     def apply_standard_preprocessing(
         self,
         agg_col: str,
-        dropna: bool = False,
+        dropna: tuple[bool, int] = (False, None),
         filter_incompletes: bool = True,
         date_cols: list[str] = [],
     ) -> None:
@@ -177,27 +189,39 @@ class InputData:
         if agg_col not in ["rem_time", "rem_act"]:
             raise AssertionError("Please choose another aggregation column")
 
-        if dropna:
-            original_no_rows = self.df.shape[0]
-            original_no_cols = self.df.shape[1]
-            # self.df = self.df.dropna(axis="index")
-            # print(f"Dropping n/a's..  [{original_no_rows - self.df.shape[0]}/{original_no_rows} rows deleted]")
-            self.df = self.df.dropna(axis="columns")
-            print(
-                f"Dropping n/a's..  [{original_no_cols - self.df.shape[1]}/{original_no_cols} columns deleted]"
+        if type(dropna) is not tuple:
+            raise TypeError(
+                f"The variable 'dropna' should be a tuple: tuple[bool, int], where the second element can be either '0' (index) or '1' (columns)"
             )
+        elif dropna[0]:
+            if dropna[1] not in [0, 1]:
+                dropna = (True, 0)
+
+            original_number = self.df.shape[dropna[1]]
+            self.df = self.df.dropna(axis=dropna[1])
+
+            if dropna[1] == 0:
+                print(
+                    f"Dropping n/a's..  [{original_number - self.df.shape[dropna[1]]}/{original_number} rows deleted]"
+                )
+            elif dropna[1] == 1:
+                print(
+                    f"Dropping n/a's..  [{original_number - self.df.shape[dropna[1]]}/{original_number} columns deleted]"
+                )
 
         if filter_incompletes:
             self.filter_incomplete_processes2()
 
         # if "prev_events" in agg_cols:
         #     self._add_prev_events()
-        if date_cols:
+        if date_cols == "auto":
+            self._convert_times()
+        elif date_cols:
             self._convert_times(date_cols)
 
         if agg_col == "rem_time":
             self._add_remaining_time()
-        if agg_col == "rem_act":
+        elif agg_col == "rem_act":
             self._add_remaining_act()
 
     def use_cat_encoding_on(self, encoding: str, cat_vars: list[str]):
