@@ -1,8 +1,8 @@
 import numpy as np
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_squared_error
 
 
-def get_mae_mse(y_test, y_preds) -> tuple[float, float, float]:
+def get_mae_rmse(y_test, y_preds) -> tuple[float, float, float]:
 
     r2 = r2_score(y_test, y_preds)
 
@@ -13,6 +13,7 @@ def get_mae_mse(y_test, y_preds) -> tuple[float, float, float]:
         y_preds = np.array(y_preds)
 
     mse = (np.square(y_test - y_preds)).mean(axis=None)
+    rmse = mse**0.5
     mae = (np.abs(y_test - y_preds)).mean(axis=None)
 
-    return mae, mse, r2
+    return mae, rmse, r2

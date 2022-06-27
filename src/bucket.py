@@ -17,7 +17,6 @@ class Bucket:
         self,
         y_col: str,
         cols_to_drop: list[str],
-        # model,
         seed: int = None,
         cv: int = None,
     ) -> None:
@@ -47,7 +46,6 @@ class Bucket:
         self.y = []  # becomes pd.Series
         self.cols_to_drop = cols_to_drop
 
-        # self.model = deepcopy(model)
         if seed is None:
             seed = 42
         if cv is None:

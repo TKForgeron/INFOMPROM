@@ -9,7 +9,6 @@ class State:
         representation: str,
         y_col: str,
         cols_to_drop: list[str],
-        # model,
         seed: int = None,
         cv: int = None,
     ) -> None:
@@ -28,7 +27,6 @@ class State:
         self.bucket = Bucket(
             y_col=y_col,
             cols_to_drop=cols_to_drop,
-            # model=model,
             seed=seed,
             cv=cv,
         )

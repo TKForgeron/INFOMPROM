@@ -41,14 +41,14 @@ class AalstModel:
         return [self.prediction] * X.shape[0]
 
 
-class Average(AalstModel):
+class Mean(AalstModel):
     def __init__(
         self,
     ) -> None:
         super().__init__()
 
     def __str__(self):
-        return "Average()"
+        return "Mean()"
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
 

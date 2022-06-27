@@ -12,7 +12,6 @@ class ATS:
         trace_id_col: str,
         act_col: str,
         y_col: str,
-        # model,
         representation: str = "trace",
         horizon: int = sys.maxsize,  # infite
         filter_out: list = [],
@@ -30,8 +29,6 @@ class ATS:
         self.horizon = horizon
         self.filter_out = filter_out
 
-        # self.model = model
-
         self.seed = seed
         self.cv = cv
 
@@ -43,7 +40,6 @@ class ATS:
             representation,
             self.y_col,
             [trace_id_col, act_col],
-            # model,
             seed,
             cv,
         )
@@ -126,7 +122,6 @@ class ATS:
                 representation=self.rep,
                 y_col=self.y_col,
                 cols_to_drop=[self.trace_id_col, self.act_col],
-                # model=self.model,
                 seed=self.seed,
                 cv=self.cv,
             )
