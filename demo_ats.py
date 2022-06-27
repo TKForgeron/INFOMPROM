@@ -41,7 +41,7 @@ from src.globals import (
 if __name__ == "__main__":
 
     try:
-        # raise Exception("tuning data prepprocessing step")
+        raise Exception("tuning data prepprocessing step")
         input = pd.read_pickle(f"data/{INPUTDATA_OBJECT}.pkl")
     except:
         input = InputData(PREPROCESSING_IN_FILE)
@@ -57,7 +57,7 @@ if __name__ == "__main__":
             "ohe", ["Asset Type Affected", "Status", "Closure Code"]
         )
 
-        # # columns that have have ordinal values are label encoded
+        # columns that have have ordinal values are label encoded
         input.use_cat_encoding_on("label", ["Category", "Priority"])
 
         # columns with too many categories are deleted
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     # ats.fit(X_train, y_train)
     # ats.save(BASE_ATS_OUT_FILE)
 
-    ats.finalize(model=BayesianRidge())
+    ats.finalize(model=HistGradientBoostingRegressor())
     ats.save(f"{ATS_OUT_FILE}_{ats.model}")
 
 print_progress_bar(0, len(y_test), prefix="Prediction:", suffix="Complete", length=50)
