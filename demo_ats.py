@@ -32,7 +32,7 @@ if __name__ == "__main__":
         input = InputData(PREPROCESSING_IN_FILE)
         input.apply_standard_preprocessing(
             agg_col="rem_time",  # calculated y column
-            dropna=(True, 1),
+            dropna=(True, 0),
             filter_incompletes=True,
             date_cols="auto"
             # date_cols=DATE_COLS,  # when list passed: those cols will be transformed, when empty: nothing will be transformed, when 'auto' passed: will automatically detect date cols and transform them
@@ -61,6 +61,24 @@ if __name__ == "__main__":
             ],
         )
 
+        # print(input.get_df().head(2))
+        # exit(0)
+
+        print("\t counting NaNs in 'Incident ID'.. ")
+        test_df = input.get_df().iloc[:, 0:2]
+        print(f"\t {test_df}")
+        init_shape = test_df.shape
+        print(f"\t {init_shape}")
+        test_df.dropna(axis=0, inplace=True)
+        print(f"\t {test_df.shape}")
+        print(f"\t dropped: {init_shape[0]-test_df.shape[0]}")
+        print()
+        exit(0)
+
+        # drop missing values, as most models don't accept this
+        # we drop per column, as then only 4 will be lost
+        input.dropna(axis=1)
+
         input.save_df(
             n_rows=20
         )  # save function with new "n_rows" feature that ensures opening in vscode
@@ -78,6 +96,12 @@ if __name__ == "__main__":
 
     X_test = input.add_prev_events(X_test)
 
+    df = input.get_df()
+    print(df.describe)
+
+    print(f"training cols: {X_train.columns}")
+
+    exit(0)
     # IF ATS ALREADY BUILT
     # with open(f"data/{ATS_OUT_FILE}.pkl", "rb") as file:
     #     ats = pickle.load(file)

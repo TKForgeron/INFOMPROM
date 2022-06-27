@@ -1,4 +1,3 @@
-from msilib import type_binary
 import pandas as pd
 from pandasql import sqldf
 from src.categorical_encoders import *
@@ -74,6 +73,9 @@ class InputData:
         self.df["CurrentActivities"] = self.df.groupby("Incident ID").cumcount(
             ascending=True
         )
+
+    def _get_list_diff(self, li1: list, li2: list) -> list:
+        return list(set(li1) - set(li2)) + list(set(li2) - set(li1))
 
     def add_prev_events(self, data) -> None:
 
@@ -189,25 +191,16 @@ class InputData:
         if agg_col not in ["rem_time", "rem_act"]:
             raise AssertionError("Please choose another aggregation column")
 
-        if type(dropna) is not tuple:
-            raise TypeError(
-                f"The variable 'dropna' should be a tuple: tuple[bool, int], where the second element can be either '0' (index) or '1' (columns)"
-            )
-        elif dropna[0]:
-            if dropna[1] not in [0, 1]:
-                dropna = (True, 0)
-
-            original_number = self.df.shape[dropna[1]]
-            self.df = self.df.dropna(axis=dropna[1])
-
-            if dropna[1] == 0:
-                print(
-                    f"Dropping n/a's..  [{original_number - self.df.shape[dropna[1]]}/{original_number} rows deleted]"
-                )
-            elif dropna[1] == 1:
-                print(
-                    f"Dropping n/a's..  [{original_number - self.df.shape[dropna[1]]}/{original_number} columns deleted]"
-                )
+        # if dropna for rows would drop <10%, drop the NaNs here (before filter_incompletes)
+        if dropna == (True, 0):
+            # self.dropna(axis=0, specific_col="Incident ID")
+            print("\t counting NaNs in 'Incident ID'.. ")
+            test_df = self.df["Incident ID"]
+            init_shape = test_df.shape
+            print(f"\t {init_shape}")
+            test_df.dropna(axis=0, inplace=True)
+            print(f"\t {test_df.shape}")
+            print(f"\t dropped: {init_shape[0]-test_df.shape[0]}")
 
         if filter_incompletes:
             self.filter_incomplete_processes2()
@@ -240,6 +233,33 @@ class InputData:
         self.df = encoder.fit_transform(self.df)
 
         # print("FINISHED PREPROCESSING\n")
+
+    def dropna(self, axis: int, specific_col: str = None):
+
+        if axis not in [0, 1]:
+            raise ValueError("'axis' must be either '0' or '1'")
+
+        original_number = self.df.shape[axis]
+        init_cols = self.df.columns.tolist()
+        self.df = self.df.dropna(axis=axis)
+
+        if axis == 0:
+
+            if specific_col is not None:
+                df = self.df
+                df = df[~df[specific_col].isna()]
+                # .dropna(axis=axis, subset=[specific_col], inplace=True)
+
+            print(
+                f"Dropping n/a's..  [{original_number - self.df.shape[axis]}/{original_number} rows deleted]"
+            )
+        elif axis == 1:
+            print(
+                f"Dropping n/a's..  [{original_number - self.df.shape[axis]}/{original_number} columns deleted]"
+            )
+            new_cols = self.df.columns.tolist()
+            dropped_cols = self._get_list_diff(init_cols, new_cols)
+            print(f"\t Dropped: {dropped_cols}")
 
     def train_test_split_on_trace(
         self, y_col: str, ratio: int = 0.8, seed: int = 42
