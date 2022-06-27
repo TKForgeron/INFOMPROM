@@ -93,25 +93,25 @@ if __name__ == "__main__":
     X_test = input.add_prev_events(X_test)
 
     # If ATS already fitted (not finalized)
-    with open(f"data/{BASE_ATS_OUT_FILE}.pkl", "rb") as file:
-        ats = pickle.load(file)
+    # with open(f"data/{BASE_ATS_OUT_FILE}.pkl", "rb") as file:
+    #     ats = pickle.load(file)
 
     # If ATS already fitted and finalized
     # with open(f"data/{ATS_OUT_FILE}.pkl", "rb") as file:
     #     ats = pickle.load(file)
 
-    # ats = ATS(
-    #     trace_id_col="Incident ID",
-    #     act_col="Activity",
-    #     y_col="RemainingTime",
-    #     representation="multiset",
-    #     horizon=1,
-    #     # model=SVR(),
-    #     seed=RANDOM_SEED,
-    # )
+    ats = ATS(
+        trace_id_col="Incident ID",
+        act_col="Activity",
+        y_col="RemainingTime",
+        representation="multiset",
+        horizon=1,
+        # model=SVR(),
+        seed=RANDOM_SEED,
+    )
 
-    # ats.fit(X_train, y_train)
-    # ats.save(BASE_ATS_OUT_FILE)
+    ats.fit(X_train, y_train)
+    ats.save(BASE_ATS_OUT_FILE)
 
     ats.finalize(model=HistGradientBoostingRegressor())
     ats.save(f"{ATS_OUT_FILE}_{ats.model}")
@@ -140,6 +140,7 @@ with open(f"data/y_preds_{ats.model}.pkl", "wb") as file:
 mae, mse, r2 = get_mae_mse(y_test.tolist(), y_preds)
 
 print(ats.model)
+print(f"R^2: {round(r2,3)}")
 # get difference in hours instead of seconds
 print(f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days")
 print(f"MSE: {round(mse/ (60*60))} hours  = {round(mse / (60*60*24))} days")
