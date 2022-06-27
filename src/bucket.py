@@ -17,7 +17,7 @@ class Bucket:
         self,
         y_col: str,
         cols_to_drop: list[str],
-        model,
+        # model,
         seed: int = None,
         cv: int = None,
     ) -> None:
@@ -47,7 +47,7 @@ class Bucket:
         self.y = []  # becomes pd.Series
         self.cols_to_drop = cols_to_drop
 
-        self.model = deepcopy(model)
+        # self.model = deepcopy(model)
         if seed is None:
             seed = 42
         if cv is None:
@@ -71,10 +71,11 @@ class Bucket:
         formatted_x = pd.DataFrame([pred_x])
         return self.predict(formatted_x)[0]
 
-    def finalize(self) -> None:
+    def finalize(self, model) -> None:
 
         self.X = pd.DataFrame(self.X).drop(self.cols_to_drop, axis=1)
         self.y = pd.Series(self.y)
         self.y.name = self.y_col
 
+        self.model = deepcopy(model)
         self.model.fit(self.X, self.y)

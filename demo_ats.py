@@ -1,22 +1,37 @@
+# External imports
 import pickle
-from src.ats import *
 import pandas as pd
+from sklearn.linear_model import (
+    LinearRegression,  # linear, no outliers in data, no correlation between features
+    TheilSenRegressor,  # linear, no outliers in data, correlation between features
+    Lars,  # linear, outliers in data, speed important, more features than samples, MAE: 325
+    ARDRegression,  # linear, outliers in data, speed important, few important features,
+    SGDRegressor,  # linear, outliers in data, speed important, large dataset
+    BayesianRidge,  # linear, outliers in data, speed important, not especially large dataset
+)
+from sklearn.neighbors import (
+    KNeighborsRegressor,  # MAE: 46
+    RadiusNeighborsRegressor,
+)  # nonlinear, many features, few important features, sample/feature ratio: high sample
+from sklearn.svm import (
+    SVR,  # nonlinear, many features, few important features, sample/feature ratio: high feature
+)
+from sklearn.ensemble import (
+    HistGradientBoostingRegressor,  # nonlinear, <10 features, no noise/outliers, >10000 samples, robust against missing values
+)
+
+# Internal imports
+from src.ats import *
 from src.print_ats import *
 from src.input_data import InputData
 from src.custom_models import Average, Minimum, Maximum, SampleMean, Median, Mode
 from src.metrics import get_mae_mse
-from sklearn.linear_model import (
-    LinearRegression,
-    LogisticRegression,
-    ElasticNetCV,
-)
-from sklearn.svm import SVR
-from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestRegressor
 from src.helper import print_progress_bar
 from src.globals import (
     PREPROCESSING_IN_FILE,
     INPUTDATA_OBJECT,
     ATS_OUT_FILE,
+    BASE_ATS_OUT_FILE,
     RANDOM_SEED,
     TARGET_COLUMN,
     DATE_COLS,
@@ -26,13 +41,12 @@ from src.globals import (
 if __name__ == "__main__":
 
     try:
-        raise Exception("tuning data prepprocessing step")
+        # raise Exception("tuning data prepprocessing step")
         input = pd.read_pickle(f"data/{INPUTDATA_OBJECT}.pkl")
     except:
         input = InputData(PREPROCESSING_IN_FILE)
         input.apply_standard_preprocessing(
             agg_col="rem_time",  # calculated y column
-            dropna=(True, 0),
             filter_incompletes=True,
             date_cols="auto"
             # date_cols=DATE_COLS,  # when list passed: those cols will be transformed, when empty: nothing will be transformed, when 'auto' passed: will automatically detect date cols and transform them
@@ -40,11 +54,11 @@ if __name__ == "__main__":
 
         # columns that have <20 unique values are one-hot encoded
         input.use_cat_encoding_on(
-            "ohe", ["Priority", "Asset Type Affected", "Status", "Closure Code"]
+            "ohe", ["Asset Type Affected", "Status", "Closure Code"]
         )
 
         # # columns that have have ordinal values are label encoded
-        input.use_cat_encoding_on("label", ["Category"])
+        input.use_cat_encoding_on("label", ["Category", "Priority"])
 
         # columns with too many categories are deleted
         input.use_cat_encoding_on(
@@ -61,20 +75,6 @@ if __name__ == "__main__":
             ],
         )
 
-        # print(input.get_df().head(2))
-        # exit(0)
-
-        print("\t counting NaNs in 'Incident ID'.. ")
-        test_df = input.get_df().iloc[:, 0:2]
-        print(f"\t {test_df}")
-        init_shape = test_df.shape
-        print(f"\t {init_shape}")
-        test_df.dropna(axis=0, inplace=True)
-        print(f"\t {test_df.shape}")
-        print(f"\t dropped: {init_shape[0]-test_df.shape[0]}")
-        print()
-        exit(0)
-
         # drop missing values, as most models don't accept this
         # we drop per column, as then only 4 will be lost
         input.dropna(axis=1)
@@ -90,37 +90,31 @@ if __name__ == "__main__":
         y_col=TARGET_COLUMN, ratio=0.8, seed=RANDOM_SEED
     )
 
-    print(
-        f"xtrain: {X_train.shape}, xtest:{X_test.shape}, ytrain:{y_train.shape}, ytest: {y_test.shape}"
-    )
-
     X_test = input.add_prev_events(X_test)
 
-    df = input.get_df()
-    print(df.describe)
+    # If ATS already fitted (not finalized)
+    with open(f"data/{BASE_ATS_OUT_FILE}.pkl", "rb") as file:
+        ats = pickle.load(file)
 
-    print(f"training cols: {X_train.columns}")
-
-    exit(0)
-    # IF ATS ALREADY BUILT
+    # If ATS already fitted and finalized
     # with open(f"data/{ATS_OUT_FILE}.pkl", "rb") as file:
     #     ats = pickle.load(file)
 
-    ats = ATS(
-        trace_id_col="Incident ID",
-        act_col="Activity",
-        y_col="RemainingTime",
-        representation="multiset",
-        horizon=1,
-        model=LinearRegression(),
-        seed=RANDOM_SEED,
-    )
+    # ats = ATS(
+    #     trace_id_col="Incident ID",
+    #     act_col="Activity",
+    #     y_col="RemainingTime",
+    #     representation="multiset",
+    #     horizon=1,
+    #     # model=SVR(),
+    #     seed=RANDOM_SEED,
+    # )
 
-    ats.fit(X_train, y_train)
-    ats.finalize()
-    # ats.print()
+    # ats.fit(X_train, y_train)
+    # ats.save(BASE_ATS_OUT_FILE)
 
-    ats.save(ATS_OUT_FILE)
+    ats.finalize(model=BayesianRidge())
+    ats.save(f"{ATS_OUT_FILE}_{ats.model}")
 
 print_progress_bar(0, len(y_test), prefix="Prediction:", suffix="Complete", length=50)
 
@@ -143,12 +137,9 @@ with open(f"data/y_preds_{ats.model}.pkl", "wb") as file:
     pickle.dump(y_preds, file)
 
 
-mae, mse = get_mae_mse(y_test.tolist(), y_preds)
+mae, mse, r2 = get_mae_mse(y_test.tolist(), y_preds)
 
 print(ats.model)
-print(
-    f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days"
-)  # get difference in hours instead of seconds
-print(
-    f"MSE: {round(mse/ (60*60))} hours  = {round(mse / (60*60*24))} days"
-)  # get difference in hours instead of seconds
+# get difference in hours instead of seconds
+print(f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days")
+print(f"MSE: {round(mse/ (60*60))} hours  = {round(mse / (60*60*24))} days")

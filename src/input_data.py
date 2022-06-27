@@ -24,8 +24,9 @@ class InputData:
         print("Converting dates.. ")
 
         if date_cols is None:
+            # automatically detect and convert date columns
             for col in self.df.columns:
-                if self.df[col].dtype == "object":
+                if self.df[col].dtype == "object" and "time" in col.lower():
                     try:
                         self.df[col] = pd.to_datetime(self.df[col], errors="coerce")
                         self.df[col] = (
@@ -34,6 +35,7 @@ class InputData:
                     except ValueError:
                         pass
         else:
+            # manually select and convert date columns
             for col in date_cols:
 
                 self.df[col] = pd.to_datetime(self.df[col], errors="coerce")
@@ -148,7 +150,7 @@ class InputData:
 
         self.df = sqldf(q)
 
-        print(f" [{size - self.df.shape[0]}/{size} rows have been deleted...]")
+        print(f" [{size - self.df.shape[0]}/{size} rows deleted]")
 
     def add_agg_col(self, aggregation: str = "rem_time") -> None:
 
@@ -192,15 +194,7 @@ class InputData:
             raise AssertionError("Please choose another aggregation column")
 
         # if dropna for rows would drop <10%, drop the NaNs here (before filter_incompletes)
-        if dropna == (True, 0):
-            # self.dropna(axis=0, specific_col="Incident ID")
-            print("\t counting NaNs in 'Incident ID'.. ")
-            test_df = self.df["Incident ID"]
-            init_shape = test_df.shape
-            print(f"\t {init_shape}")
-            test_df.dropna(axis=0, inplace=True)
-            print(f"\t {test_df.shape}")
-            print(f"\t dropped: {init_shape[0]-test_df.shape[0]}")
+        # use here ONLY for rows, otherwise apply after encoding operations
 
         if filter_incompletes:
             self.filter_incomplete_processes2()
@@ -235,7 +229,6 @@ class InputData:
         # print("FINISHED PREPROCESSING\n")
 
     def dropna(self, axis: int, specific_col: str = None):
-
         if axis not in [0, 1]:
             raise ValueError("'axis' must be either '0' or '1'")
 
@@ -246,20 +239,18 @@ class InputData:
         if axis == 0:
 
             if specific_col is not None:
-                df = self.df
-                df = df[~df[specific_col].isna()]
-                # .dropna(axis=axis, subset=[specific_col], inplace=True)
+                self.df = self.df.dropna(axis=0, subset=[specific_col])
 
             print(
-                f"Dropping n/a's..  [{original_number - self.df.shape[axis]}/{original_number} rows deleted]"
+                f"Dropping missing values..  [{original_number - self.df.shape[axis]}/{original_number} rows deleted]"
             )
         elif axis == 1:
             print(
-                f"Dropping n/a's..  [{original_number - self.df.shape[axis]}/{original_number} columns deleted]"
+                f"Dropping missing values..  [{original_number - self.df.shape[axis]}/{original_number} columns deleted]"
             )
             new_cols = self.df.columns.tolist()
             dropped_cols = self._get_list_diff(init_cols, new_cols)
-            print(f"\t Dropped: {dropped_cols}")
+            print(f"\t Deleted: {dropped_cols}")
 
     def train_test_split_on_trace(
         self, y_col: str, ratio: int = 0.8, seed: int = 42

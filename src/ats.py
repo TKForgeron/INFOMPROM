@@ -12,7 +12,7 @@ class ATS:
         trace_id_col: str,
         act_col: str,
         y_col: str,
-        model,
+        # model,
         representation: str = "trace",
         horizon: int = sys.maxsize,  # infite
         filter_out: list = [],
@@ -30,7 +30,7 @@ class ATS:
         self.horizon = horizon
         self.filter_out = filter_out
 
-        self.model = model
+        # self.model = model
 
         self.seed = seed
         self.cv = cv
@@ -43,7 +43,7 @@ class ATS:
             representation,
             self.y_col,
             [trace_id_col, act_col],
-            model,
+            # model,
             seed,
             cv,
         )
@@ -126,7 +126,7 @@ class ATS:
                 representation=self.rep,
                 y_col=self.y_col,
                 cols_to_drop=[self.trace_id_col, self.act_col],
-                model=self.model,
+                # model=self.model,
                 seed=self.seed,
                 cv=self.cv,
             )
@@ -211,7 +211,7 @@ class ATS:
         length = len(grouped)
         i = 0
 
-        print_progress_bar(0, length, prefix="Create:", suffix="Complete", length=50)
+        print_progress_bar(0, length, prefix="Fit:", suffix="Complete", length=50)
         for name, group in grouped:
 
             y = group.pop(self.y_col).tolist()
@@ -221,7 +221,7 @@ class ATS:
             self.add_trace(X, y)
 
             print_progress_bar(
-                i + 1, length, prefix="Create:", suffix="Complete", length=50
+                i + 1, length, prefix="Fit:", suffix="Complete", length=50
             )
             i += 1
 
@@ -318,13 +318,13 @@ class ATS:
 
         return state.predict(event)
 
-    def finalize(self, progress_bar=True) -> None:
+    def finalize(self, model, progress_bar=True) -> None:
         """
         This function finalizes the ATS such that can work as
         a prediction model.
 
         """
-
+        self.model = model
         self.finalized = True
 
         if progress_bar:
@@ -342,7 +342,7 @@ class ATS:
                     suffix="Complete",
                     length=50,
                 )
-            state.finalize()
+            state.finalize(model)
 
         if progress_bar:
 

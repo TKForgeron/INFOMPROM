@@ -19,17 +19,19 @@ y_preds_median = np.array([y_train.median()] * len(y_test))
 y_train_mode = y_train.mode().tolist()
 y_preds_mode = np.array([y_train_mode[len(y_train_mode) // 2]] * len(y_test))
 
-mae_mean, mse_mean = get_mae_mse(y_test, y_preds_mean)
-mae_median, mse_median = get_mae_mse(y_test, y_preds_median)
-mae_mode, mse_mode = get_mae_mse(y_test, y_preds_mode)
+mae_mean, mse_mean, r2_mean = get_mae_mse(y_test, y_preds_mean)
+mae_median, mse_median, r2_median = get_mae_mse(y_test, y_preds_median)
+mae_mode, mse_mode, r2_mode = get_mae_mse(y_test, y_preds_mode)
 
 print("Naive Mean")
+print(f"R^2: {r2_mean}")
 # get difference in hours instead of seconds
 print(f"MAE: {round(mae_mean/ (60*60))} hours  = {round(mae_mean / (60*60*24))} days")
 print(f"MSE: {round(mse_mean/ (60*60))} hours  = {round(mse_mean / (60*60*24))} days")
 print()
 
 print("Naive Median")
+print(f"R^2: {round(r2_median,3)}")
 # get difference in hours instead of seconds
 print(
     f"MAE: {round(mae_median/ (60*60))} hours  = {round(mae_median / (60*60*24))} days"
@@ -40,6 +42,7 @@ print(
 print()
 
 print("Naive Mode")
+print(f"R^2: {round(r2_mode,3)}")
 # get difference in hours instead of seconds
 print(f"MAE: {round(mae_mode/ (60*60))} hours  = {round(mae_mode / (60*60*24))} days")
 print(f"MSE: {round(mse_mode/ (60*60))} hours  = {round(mse_mode / (60*60*24))} days")

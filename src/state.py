@@ -9,7 +9,7 @@ class State:
         representation: str,
         y_col: str,
         cols_to_drop: list[str],
-        model,
+        # model,
         seed: int = None,
         cv: int = None,
     ) -> None:
@@ -28,7 +28,7 @@ class State:
         self.bucket = Bucket(
             y_col=y_col,
             cols_to_drop=cols_to_drop,
-            model=model,
+            # model=model,
             seed=seed,
             cv=cv,
         )
@@ -50,10 +50,8 @@ class State:
 
         y_pred = self.bucket.predict_one(event)
 
-        # print(f"state {self.id} predicts: {y_pred / (60*60)} hour")
         return y_pred
 
-    def finalize(self):
+    def finalize(self, model):
 
-        self.bucket.finalize()
-        # print(f"Some method that prepares the state {self.id} bucket for prediction")
+        self.bucket.finalize(model)
