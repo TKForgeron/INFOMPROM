@@ -3,8 +3,7 @@ from src.globals import *
 from src.metrics import get_mae_rmse
 import numpy as np
 
-# get same train-test-split as used in our actual experiment
-
+# get same preprocessed input data as used in our actual experiment
 with open(f"data/{INPUTDATA_OBJECT}.pkl", "rb") as file:
     input = pickle.load(file)
 
