@@ -5,16 +5,16 @@ Assignment belonging to Process Mining course given by Utrecht University (2021-
 # Installation Information
 
 ### Python Virtual Environment
-Use <code> py install -m venv venv </code>
+Use `py install -m venv venv`
 To activate:
-<code> source venv/Scripts/activate </code> (Windows)
+`source venv/Scripts/activate` (Windows)
 
-<code> source venv/bin/activate </code> (OSX, Linux)
+`source venv/bin/activate` (OSX, Linux)
 
 ### Dependencies
-Found in <code>requirements.txt</code>
+Found in `requirements.txt`
 
-Use <code> pip install -r requirements.txt </code>
+Use `pip install -r requirements.txt`
 
 ### graphviz software
 
