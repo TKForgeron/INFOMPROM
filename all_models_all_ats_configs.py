@@ -38,18 +38,26 @@ from src.globals import (
     BASE_ATS_OUT_FILE,
     RANDOM_SEED,
     TIME_TARGET_COLUMN,
+    ACTIVITY_TARGET_COLUMN,
 )
 
 
 if __name__ == "__main__":
 
-    target_var = "rem_time"
-    y_col = TIME_TARGET_COLUMN
+    target_vars = ("rem_time", "rem_act")
+    y_cols = (TIME_TARGET_COLUMN, ACTIVITY_TARGET_COLUMN)
+    models = [
+        Mean(),
+        Median(),
+        Mode(),
+        LinearRegression(),
+        SVR(),
+        KNeighborsRegressor(n_jobs=-1),
+        HistGradientBoostingRegressor(random_state=RANDOM_SEED),
+        BaggingRegressor(n_jobs=-1),
+    ]
 
-    try:
-        raise Exception("tuning data prepprocessing step")
-        input = pd.read_pickle(f"data/{INPUTDATA_OBJECT}_{target_var}.pkl")
-    except:
+    for target_var, y_col in zip(target_vars, y_cols):
         input = InputData(PREPROCESSING_IN_FILE)
         input.apply_standard_preprocessing(
             agg_col=target_var,  # calculated y column
@@ -90,55 +98,63 @@ if __name__ == "__main__":
 
         input.save(f"{INPUTDATA_OBJECT}_{target_var}")
 
-    # split function that keeps traces together
-    X_train, X_test, y_train, y_test = input.train_test_split_on_trace(
-        y_col=y_col, ratio=0.8, seed=RANDOM_SEED
-    )
+        # split function that keeps traces together
+        X_train, X_test, y_train, y_test = input.train_test_split_on_trace(
+            y_col=y_col, ratio=0.8, seed=RANDOM_SEED
+        )
 
-    X_test = input.add_prev_events(X_test)
+        X_test = input.add_prev_events(X_test)
 
-    # If ATS already fitted (not finalized)
-    # with open(f"data/{BASE_ATS_OUT_FILE}_{target_var}.pkl", "rb") as file:
-    #     ats = pickle.load(file)
+        for model in models:
 
-    ats = ATS(
-        trace_id_col="Incident ID",
-        act_col="Activity",
-        y_col=y_col,
-        representation="multiset",
-        horizon=1,
-        seed=RANDOM_SEED,
-    )
-    ats.fit(X_train, y_train)
-    ats.save(f"{BASE_ATS_OUT_FILE}_{target_var}")
+            # If ATS already fitted (not finalized)
+            # with open(f"data/{BASE_ATS_OUT_FILE}_{target_var}.pkl", "rb") as file:
+            #     ats = pickle.load(file)
 
-    ats.finalize(model=RadiusNeighborsRegressor(n_jobs=-1))
+            ats = ATS(
+                trace_id_col="Incident ID",
+                act_col="Activity",
+                y_col=y_col,
+                representation="multiset",
+                horizon=1,
+                seed=RANDOM_SEED,
+            )
+            ats.fit(X_train, y_train)
+            ats.save(f"{BASE_ATS_OUT_FILE}_{target_var}")
 
-print_progress_bar(0, len(y_test), prefix="Prediction:", suffix="Complete", length=50)
+            ats.finalize(model=model)
 
-y_preds = []
+            print_progress_bar(
+                0, len(y_test), prefix="Prediction:", suffix="Complete", length=50
+            )
 
-for i, event in enumerate(X_test.to_dict(orient="records")):
+            y_preds = []
 
-    y_preds.append(ats.predict(event))
-    print_progress_bar(
-        i + 1, len(y_test), prefix="Prediction:", suffix="Complete", length=50
-    )
+            for i, event in enumerate(X_test.to_dict(orient="records")):
 
+                y_preds.append(ats.predict(event))
+                print_progress_bar(
+                    i + 1,
+                    len(y_test),
+                    prefix="Prediction:",
+                    suffix="Complete",
+                    length=50,
+                )
 
-# pickling y_test
-with open("data/y_test.pkl", "wb") as file:
-    pickle.dump(y_test, file)
+            # pickling y_test
+            with open("data/y_test.pkl", "wb") as file:
+                pickle.dump(y_test, file)
 
-# pickling all predicted values into a pickled variable with name of the model used
-with open(f"data/y_preds_{target_var}_{ats.model}.pkl", "wb") as file:
-    pickle.dump(y_preds, file)
+            # pickling all predicted values into a pickled variable with name of the model used
+            with open(f"data/y_preds_{target_var}_{ats.model}.pkl", "wb") as file:
+                pickle.dump(y_preds, file)
 
+            mae, rmse, r2 = get_mae_rmse(y_test.tolist(), y_preds)
 
-mae, rmse, r2 = get_mae_rmse(y_test.tolist(), y_preds)
-
-print(f"{ats.model} predicting {y_col}:")
-print(f"R^2: {round(r2,3)}")
-# get difference in hours instead of seconds
-print(f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days")
-print(f"RMSE: {round(rmse/ (60*60))} hours  = {round(rmse / (60*60*24))} days")
+            print(f"{ats.model} predicting {y_col}:")
+            print(f"R^2: {round(r2,3)}")
+            # get difference in hours instead of seconds
+            print(f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days")
+            print(
+                f"RMSE: {round(rmse/ (60*60))} hours  = {round(rmse / (60*60*24))} days"
+            )
