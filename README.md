@@ -6,9 +6,11 @@ Assignment belonging to Process Mining course given by Utrecht University (2021-
 
 ### Python Virtual Environment
 Use `py install -m venv venv`
-To activate:
-`source venv/Scripts/activate` (Windows)
 
+To activate:
+
+`source venv/Scripts/activate` (Windows)
+or
 `source venv/bin/activate` (OSX, Linux)
 
 ### Dependencies
