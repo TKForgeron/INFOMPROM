@@ -34,7 +34,6 @@ from src.helper import print_progress_bar
 from src.globals import (
     PREPROCESSING_IN_FILE,
     INPUTDATA_OBJECT,
-    ATS_OUT_FILE,
     BASE_ATS_OUT_FILE,
     RANDOM_SEED,
     TIME_TARGET_COLUMN,
@@ -47,7 +46,7 @@ if __name__ == "__main__":
     y_col = TIME_TARGET_COLUMN
 
     try:
-        raise Exception("tuning data prepprocessing step")
+        # raise Exception("tuning data prepprocessing step")
         input = pd.read_pickle(f"data/{INPUTDATA_OBJECT}_{target_var}.pkl")
     except:
         input = InputData(PREPROCESSING_IN_FILE)

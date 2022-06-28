@@ -1,3 +1,7 @@
+*.*
+!y_preds*.pkl
+!y_test*.pkl
+
 # vscode
 .vscode/
 .vscode

@@ -33,7 +33,6 @@ from src.helper import print_progress_bar
 from src.globals import (
     PREPROCESSING_IN_FILE,
     INPUTDATA_OBJECT,
-    ATS_OUT_FILE,
     BASE_ATS_OUT_FILE,
     RANDOM_SEED,
     ACTIVITY_TARGET_COLUMN,

@@ -4,11 +4,6 @@ from time import time
 import pandas as pd
 from sklearn.linear_model import (
     LinearRegression,  # linear, no outliers in data, no correlation between features
-    TheilSenRegressor,  # linear, no outliers in data, correlation between features
-    Lars,  # linear, outliers in data, speed important, more features than samples, MAE: 325
-    ARDRegression,  # linear, outliers in data, speed important, few important features,
-    SGDRegressor,  # linear, outliers in data, speed important, large dataset
-    BayesianRidge,  # linear, outliers in data, speed important, not especially large dataset
 )
 from sklearn.neighbors import (
     KNeighborsRegressor,  # MAE: 46
@@ -34,7 +29,6 @@ from src.helper import print_progress_bar
 from src.globals import (
     PREPROCESSING_IN_FILE,
     INPUTDATA_OBJECT,
-    ATS_OUT_FILE,
     BASE_ATS_OUT_FILE,
     RANDOM_SEED,
     TIME_TARGET_COLUMN,
