@@ -39,16 +39,16 @@ from src.globals import (
 
 if __name__ == "__main__":
 
-    y_cols = (TIME_TARGET_COLUMN, ACTIVITY_TARGET_COLUMN)
+    y_cols = [TIME_TARGET_COLUMN, ACTIVITY_TARGET_COLUMN]
     models = [
-        # Mean(), #done
-        # Median(),  # done
-        # Mode(),  # done
-        # LinearRegression(),  # done
+        Mean(),
+        Median(),
+        Mode(),
+        LinearRegression(),
         SVR(),
-        KNeighborsRegressor(n_jobs=-1),
+        KNeighborsRegressor(n_jobs=8),
         HistGradientBoostingRegressor(random_state=RANDOM_SEED),
-        BaggingRegressor(random_state=RANDOM_SEED, n_jobs=4),
+        BaggingRegressor(random_state=RANDOM_SEED, n_jobs=8),
     ]
     print(f"Looping through: {y_cols} and {models}")
 
@@ -162,4 +162,4 @@ if __name__ == "__main__":
                 )
             else:
                 print(f"MAE: {round(mae,2)} activities")
-                print(f"RMSE: {round(mae,2)} activities")
+                print(f"RMSE: {round(rmse,2)} activities")
