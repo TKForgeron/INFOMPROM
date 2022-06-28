@@ -3,6 +3,7 @@ INPUTDATA_OBJECT = "inputDataObject"
 ATS_OUT_FILE = "ats"
 BASE_ATS_OUT_FILE = "base_ats"
 RANDOM_SEED = 42
+TARGET_VARS = ("rem_time", "rem_act")
 TIME_TARGET_COLUMN = "RemainingTime"
 ACTIVITY_TARGET_COLUMN = "RemainingActivities"
 

@@ -7,23 +7,23 @@ from sklearn.linear_model import (
 )
 from sklearn.neighbors import (
     KNeighborsRegressor,  # MAE: 46
-    RadiusNeighborsRegressor,
+    # RadiusNeighborsRegressor,
 )  # nonlinear, many features, few important features, sample/feature ratio: high sample
 from sklearn.svm import (
     SVR,  # nonlinear, many features, outliers in data, few important features, sample/feature ratio: high feature (TAKES VEEERY LONG)
 )
 from sklearn.ensemble import (
     HistGradientBoostingRegressor,  # nonlinear, <10 features, no noise/outliers, >10000 samples, robust against missing values
-    RandomForestRegressor,
     BaggingRegressor,
-    AdaBoostRegressor,
+    # RandomForestRegressor,
+    # AdaBoostRegressor,
 )
 
 # Internal imports
 from src.ats import *
 from src.print_ats import *
 from src.input_data import InputData
-from src.custom_models import Mean, Median, Mode, Minimum, Maximum, SampleMean
+from src.custom_models import Mean, Median, Mode  # , Minimum, Maximum, SampleMean
 from src.metrics import get_mae_rmse
 from src.helper import print_progress_bar
 from src.globals import (
@@ -31,6 +31,7 @@ from src.globals import (
     INPUTDATA_OBJECT,
     BASE_ATS_OUT_FILE,
     RANDOM_SEED,
+    TARGET_VARS,
     TIME_TARGET_COLUMN,
     ACTIVITY_TARGET_COLUMN,
 )
@@ -38,20 +39,20 @@ from src.globals import (
 
 if __name__ == "__main__":
 
-    target_vars = ("rem_time", "rem_act")
     y_cols = (TIME_TARGET_COLUMN, ACTIVITY_TARGET_COLUMN)
     models = [
-        Mean(),
-        Median(),
-        Mode(),
-        LinearRegression(),
+        # Mean(), #done
+        # Median(),  # done
+        # Mode(),  # done
+        # LinearRegression(),  # done
         SVR(),
         KNeighborsRegressor(n_jobs=-1),
         HistGradientBoostingRegressor(random_state=RANDOM_SEED),
-        BaggingRegressor(n_jobs=-1),
+        BaggingRegressor(random_state=RANDOM_SEED, n_jobs=4),
     ]
+    print(f"Looping through: {y_cols} and {models}")
 
-    for target_var, y_col in zip(target_vars, y_cols):
+    for target_var, y_col in zip(TARGET_VARS, y_cols):
         input = InputData(PREPROCESSING_IN_FILE)
         input.apply_standard_preprocessing(
             agg_col=target_var,  # calculated y column
@@ -97,13 +98,20 @@ if __name__ == "__main__":
             y_col=y_col, ratio=0.8, seed=RANDOM_SEED
         )
 
+        # pickling y_test
+        with open(f"data/y_test_{target_var}.pkl", "wb") as file:
+            pickle.dump(y_test, file)
+
         X_test = input.add_prev_events(X_test)
 
         for model in models:
 
             # If ATS already fitted (not finalized)
-            # with open(f"data/{BASE_ATS_OUT_FILE}_{target_var}.pkl", "rb") as file:
-            #     ats = pickle.load(file)
+            try:
+                with open(f"data/{BASE_ATS_OUT_FILE}_{target_var}.pkl", "rb") as file:
+                    ats = pickle.load(file)
+            except:
+                pass
 
             ats = ATS(
                 trace_id_col="Incident ID",
@@ -135,10 +143,6 @@ if __name__ == "__main__":
                     length=50,
                 )
 
-            # pickling y_test
-            with open("data/y_test.pkl", "wb") as file:
-                pickle.dump(y_test, file)
-
             # pickling all predicted values into a pickled variable with name of the model used
             with open(f"data/y_preds_{target_var}_{ats.model}.pkl", "wb") as file:
                 pickle.dump(y_preds, file)
@@ -147,8 +151,15 @@ if __name__ == "__main__":
 
             print(f"{ats.model} predicting {y_col}:")
             print(f"R^2: {round(r2,3)}")
-            # get difference in hours instead of seconds
-            print(f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days")
-            print(
-                f"RMSE: {round(rmse/ (60*60))} hours  = {round(rmse / (60*60*24))} days"
-            )
+
+            if "time" in target_var:
+                # get difference in hours instead of seconds
+                print(
+                    f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days"
+                )
+                print(
+                    f"RMSE: {round(rmse/ (60*60))} hours  = {round(rmse / (60*60*24))} days"
+                )
+            else:
+                print(f"MAE: {round(mae,2)} activities")
+                print(f"RMSE: {round(mae,2)} activities")
