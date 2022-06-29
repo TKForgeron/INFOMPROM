@@ -2,20 +2,21 @@
 
 Assignment belonging to Process Mining course given by Utrecht University (2021-2022)
 
-# Installation information
+# Installation Information
 
-#### pip packages
+### Python Virtual Environment
+Use `py install -m venv venv`
 
-pm4py==2.2.21
-scikit-learn==1.1.1
-graphviz==0.20
-ipykernel==6.13.0
-ipynb==0.5.1
-wheel==0.37.1
+To activate:
 
-### pm4py python package
+`source venv/Scripts/activate` (Windows)
+or
+`source venv/bin/activate` (OSX, Linux)
 
-i.e. `pip install pm4py`
+### Dependencies
+Found in `requirements.txt`
+
+Use `pip install -r requirements.txt`
 
 ### graphviz software
 
