@@ -9,7 +9,7 @@ import datetime
 class ATS:
     def __init__(
         self,
-        trace_id_col: str,
+        case_id_col: str,
         act_col: str,
         y_col: str,
         representation: str = "trace",
@@ -21,7 +21,7 @@ class ATS:
 
         print("START CREATING ATS")
 
-        self.trace_id_col = trace_id_col
+        self.case_id_col = case_id_col
         self.act_col = act_col
         self.y_col = y_col
 
@@ -39,7 +39,7 @@ class ATS:
             [],
             representation,
             self.y_col,
-            [trace_id_col, act_col],
+            [case_id_col, act_col],
             seed,
             cv,
         )
@@ -121,7 +121,7 @@ class ATS:
                 activities=activities,
                 representation=self.rep,
                 y_col=self.y_col,
-                cols_to_drop=[self.trace_id_col, self.act_col],
+                cols_to_drop=[self.case_id_col, self.act_col],
                 seed=self.seed,
                 cv=self.cv,
             )
@@ -201,7 +201,7 @@ class ATS:
         self.x_cols = X.columns.tolist()
         self.y_col = y.name
 
-        grouped = pd.concat([X, y], axis=1).groupby(self.trace_id_col)
+        grouped = pd.concat([X, y], axis=1).groupby(self.case_id_col)
 
         length = len(grouped)
         i = 0

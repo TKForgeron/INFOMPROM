@@ -39,7 +39,6 @@ for target_var, y_col in zip(TARGET_VARS, y_cols):
             ae = ae_in_hours
             from statistics import mean
 
-        print(mean(ae))
         with open(f"data/ae_{target_var}_{model}.pkl", "wb") as file:
             pickle.dump(ae, file)
 
@@ -107,5 +106,7 @@ for target_var, y_col in zip(TARGET_VARS, y_cols):
     very_naive_ae_mean_in_days = list(
         map(lambda x: x / 60 / 60 / 24, very_naive_ae_mean)
     )
+    print(mean(ae))
+
     with open(f"data/ae_{target_var}_VeryNaiveMean().pkl", "wb") as file:
         pickle.dump(very_naive_ae_mean_in_days, file)
