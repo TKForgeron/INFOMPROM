@@ -41,14 +41,14 @@ if __name__ == "__main__":
 
     y_cols = [TIME_TARGET_COLUMN, ACTIVITY_TARGET_COLUMN]
     models = [
-        Mean(),
-        Median(),
-        Mode(),
-        LinearRegression(),
-        SVR(),
+        # Mean(),
+        # Median(),
+        # Mode(),
+        # LinearRegression(),
+        # SVR(),
         KNeighborsRegressor(n_jobs=8),
-        HistGradientBoostingRegressor(random_state=RANDOM_SEED),
-        BaggingRegressor(random_state=RANDOM_SEED, n_jobs=8),
+        # HistGradientBoostingRegressor(random_state=RANDOM_SEED),
+        # BaggingRegressor(random_state=RANDOM_SEED, n_jobs=8),
     ]
     print(f"Looping through: {y_cols} and {models}")
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
                 pass
 
             ats = ATS(
-                trace_id_col="Incident ID",
+                case_id_col="Incident ID",
                 act_col="Activity",
                 y_col=y_col,
                 representation="multiset",
@@ -163,3 +163,21 @@ if __name__ == "__main__":
             else:
                 print(f"MAE: {round(mae,2)} activities")
                 print(f"RMSE: {round(rmse,2)} activities")
+
+    # wrapping all results in csv per TARGET_VAR
+    df = pd.DataFrame()
+
+    for target_var in TARGET_VARS:
+        for model in models:
+            y_preds = pd.read_pickle(f"data/y_preds_{target_var}_{model}.pkl")
+            df_y_preds_col = pd.DataFrame({f"{target_var}_{model}": y_preds})
+            df = pd.concat([df, df_y_preds_col], axis=1)
+        y_test = pd.read_pickle(f"data/y_test_{target_var}.pkl")
+        df_y_test_col = pd.DataFrame({f"{target_var}": y_preds})
+        df = pd.concat([df, df_y_test_col], axis=1)
+
+    df_rem_time = df.loc[:, : TARGET_VARS[0]]
+    df_rem_act = df.loc[:, TARGET_VARS[0] : TARGET_VARS[1]].iloc[:, 1:]
+
+    df_rem_time.to_csv(f"results/{TARGET_VARS[0]}.csv")
+    df_rem_act.to_csv(f"results/{TARGET_VARS[1]}.csv")
