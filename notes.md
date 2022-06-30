@@ -118,3 +118,6 @@ Use cases:
 1. traverse ATS to determine bucket to use for predicting new event
 2. transform list of dicts to dataframe inside of each bucket
 3. lay foundations for implementing ML models at each Bucket (avg, max, min, median, sample mean, linear regression, RF, li)
+
+### Future Work (Tim)
+- add feature: minimum bucket size (tunable)
