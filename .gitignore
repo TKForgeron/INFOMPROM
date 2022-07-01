@@ -1,10 +1,11 @@
 # csv 
-!incidentProcess_custom.csv
-!rem_time.csv
-!rem_act.csv
+*.csv
 # data/
 
 *.*
+!incidentProcess_custom.csv
+!rem_time.csv
+!rem_act.csv
 !y_preds*.pkl
 !y_test*.pkl
 
