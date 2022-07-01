@@ -6,6 +6,7 @@
 !incidentProcess_custom.csv
 !rem_time.csv
 !rem_act.csv
+!results/
 !y_preds*.pkl
 !y_test*.pkl
 
