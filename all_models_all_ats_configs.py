@@ -1,6 +1,5 @@
 # External imports
 import pickle
-from time import time
 import pandas as pd
 from sklearn.linear_model import (
     LinearRegression,  # linear, no outliers in data, no correlation between features
@@ -46,11 +45,15 @@ if __name__ == "__main__":
         # Mode(),
         # LinearRegression(),
         # SVR(),
-        KNeighborsRegressor(n_jobs=8),
-        # HistGradientBoostingRegressor(random_state=RANDOM_SEED),
+        # KNeighborsRegressor(n_jobs=8),
+        HistGradientBoostingRegressor(random_state=RANDOM_SEED, warm_start=True),
         # BaggingRegressor(random_state=RANDOM_SEED, n_jobs=8),
     ]
-    print(f"Looping through: {y_cols} and {models}")
+    representations = ["multiset"]  # , 'set', "trace"]
+    horizons = [1]  # [1, 2, 4, 8] # 2 works worse, 5 even worse
+    print(
+        f"Looping through: {y_cols}, {models}, {representations}, and horizons: {horizons}"
+    )
 
     for target_var, y_col in zip(TARGET_VARS, y_cols):
         input = InputData(PREPROCESSING_IN_FILE)
@@ -105,79 +108,95 @@ if __name__ == "__main__":
         X_test = input.add_prev_events(X_test)
 
         for model in models:
+            for representation in representations:
+                for horizon in horizons:
 
-            # If ATS already fitted (not finalized)
-            try:
-                with open(f"data/{BASE_ATS_OUT_FILE}_{target_var}.pkl", "rb") as file:
-                    ats = pickle.load(file)
-            except:
-                pass
+                    # If ATS already fitted (not finalized)
+                    try:
+                        with open(
+                            f"data/{BASE_ATS_OUT_FILE}_{target_var}.pkl", "rb"
+                        ) as file:
+                            ats = pickle.load(file)
+                    except:
+                        pass
 
-            ats = ATS(
-                case_id_col="Incident ID",
-                act_col="Activity",
-                y_col=y_col,
-                representation="multiset",
-                horizon=1,
-                seed=RANDOM_SEED,
-            )
-            ats.fit(X_train, y_train)
-            ats.save(f"{BASE_ATS_OUT_FILE}_{target_var}")
+                    ats = ATS(
+                        case_id_col="Incident ID",
+                        act_col="Activity",
+                        y_col=y_col,
+                        representation=representation,
+                        horizon=horizon,
+                        seed=RANDOM_SEED,
+                    )
+                    ats.fit(X_train, y_train)
+                    ats.save(f"{BASE_ATS_OUT_FILE}_{target_var}")
 
-            ats.finalize(model=model)
+                    ats.finalize(model=model)
 
-            print_progress_bar(
-                0, len(y_test), prefix="Prediction:", suffix="Complete", length=50
-            )
+                    print_progress_bar(
+                        0,
+                        len(y_test),
+                        prefix="Prediction:",
+                        suffix="Complete",
+                        length=50,
+                    )
 
-            y_preds = []
+                    y_preds = []
 
-            for i, event in enumerate(X_test.to_dict(orient="records")):
+                    for i, event in enumerate(X_test.to_dict(orient="records")):
 
-                y_preds.append(ats.predict(event))
-                print_progress_bar(
-                    i + 1,
-                    len(y_test),
-                    prefix="Prediction:",
-                    suffix="Complete",
-                    length=50,
-                )
+                        y_preds.append(ats.predict(event))
+                        print_progress_bar(
+                            i + 1,
+                            len(y_test),
+                            prefix="Prediction:",
+                            suffix="Complete",
+                            length=50,
+                        )
 
-            # pickling all predicted values into a pickled variable with name of the model used
-            with open(f"data/y_preds_{target_var}_{ats.model}.pkl", "wb") as file:
-                pickle.dump(y_preds, file)
+                    # pickling all predicted values into a pickled variable with name of the model used
+                    with open(
+                        f"data/y_preds_{target_var}_{ats.model}_horizon{horizon}_{representation}.pkl",
+                        "wb",
+                    ) as file:
+                        pickle.dump(y_preds, file)
 
-            mae, rmse, r2 = get_mae_rmse(y_test.tolist(), y_preds)
+                    mae, rmse, r2 = get_mae_rmse(y_test.tolist(), y_preds)
 
-            print(f"{ats.model} predicting {y_col}:")
-            print(f"R^2: {round(r2,3)}")
+                    print(f"{ats.model} predicting {y_col}:")
+                    print(f"R^2: {round(r2,3)}")
 
-            if "time" in target_var:
-                # get difference in hours instead of seconds
-                print(
-                    f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days"
-                )
-                print(
-                    f"RMSE: {round(rmse/ (60*60))} hours  = {round(rmse / (60*60*24))} days"
-                )
-            else:
-                print(f"MAE: {round(mae,2)} activities")
-                print(f"RMSE: {round(rmse,2)} activities")
+                    if "time" in target_var:
+                        # get difference in hours instead of seconds
+                        print(
+                            f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days"
+                        )
+                        print(
+                            f"RMSE: {round(rmse/ (60*60))} hours  = {round(rmse / (60*60*24))} days"
+                        )
+                    else:
+                        print(f"MAE: {round(mae,2)} activities")
+                        print(f"RMSE: {round(rmse,2)} activities")
 
-    # wrapping all results in csv per TARGET_VAR
-    df = pd.DataFrame()
+    # # wrapping all results in csv per TARGET_VAR
+    # df = pd.DataFrame()
 
-    for target_var in TARGET_VARS:
-        for model in models:
-            y_preds = pd.read_pickle(f"data/y_preds_{target_var}_{model}.pkl")
-            df_y_preds_col = pd.DataFrame({f"{target_var}_{model}": y_preds})
-            df = pd.concat([df, df_y_preds_col], axis=1)
-        y_test = pd.read_pickle(f"data/y_test_{target_var}.pkl")
-        df_y_test_col = pd.DataFrame({f"{target_var}": y_preds})
-        df = pd.concat([df, df_y_test_col], axis=1)
+    # for target_var in TARGET_VARS:
+    #     for model in models:
+    #         for horizon in horizons:
+    #             for representation in representations:
+    #                 y_preds = pd.read_pickle(
+    #                     f"data/y_preds_{target_var}_{model}_horizon{horizon}_{representation}.pkl"
+    #                 )
+    #                 df_y_preds_col = pd.DataFrame({f"{target_var}_{model}": y_preds})
+    #                 df = pd.concat([df, df_y_preds_col], axis=1)
 
-    df_rem_time = df.loc[:, : TARGET_VARS[0]]
-    df_rem_act = df.loc[:, TARGET_VARS[0] : TARGET_VARS[1]].iloc[:, 1:]
+    #     y_test = pd.read_pickle(f"data/y_test_{target_var}.pkl")
+    #     df_y_test_col = pd.DataFrame({f"{target_var}": y_preds})
+    #     df = pd.concat([df, df_y_test_col], axis=1)
 
-    df_rem_time.to_csv(f"results/{TARGET_VARS[0]}.csv")
-    df_rem_act.to_csv(f"results/{TARGET_VARS[1]}.csv")
+    # df_rem_time = df.loc[:, : TARGET_VARS[0]]
+    # df_rem_act = df.loc[:, TARGET_VARS[0] : TARGET_VARS[1]].iloc[:, 1:]
+
+    # df_rem_time.to_csv(f"results/{TARGET_VARS[0]}.csv")
+    # df_rem_act.to_csv(f"results/{TARGET_VARS[1]}.csv")

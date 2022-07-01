@@ -2,6 +2,7 @@
 import pickle
 from time import time
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import (
     LinearRegression,  # linear, no outliers in data, no correlation between features
     TheilSenRegressor,  # linear, no outliers in data, correlation between features
@@ -46,7 +47,7 @@ if __name__ == "__main__":
     y_col = TIME_TARGET_COLUMN
 
     try:
-        raise Exception("tuning data prepprocessing step")
+        # raise Exception("tuning data prepprocessing step")
         input = pd.read_pickle(f"data/{INPUTDATA_OBJECT}_{target_var}.pkl")
     except:
         input = InputData(PREPROCESSING_IN_FILE)
@@ -93,6 +94,43 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = input.train_test_split_on_trace(
         y_col=y_col, ratio=0.8, seed=RANDOM_SEED
     )
+
+    df = input.get_df()
+    df = df.drop(["Incident ID", "index", "Activity"], axis=1)
+    X = df.drop([y_col], axis=1)
+    y = df[y_col]
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, train_size=0.8, random_state=RANDOM_SEED
+    )
+
+    models = [
+        # Mean(),
+        # Median(),
+        # Mode(),
+        # LinearRegression(),
+        # SVR(),
+        # KNeighborsRegressor(n_jobs=8),
+        # HistGradientBoostingRegressor(random_state=RANDOM_SEED, warm_start=True),
+        BaggingRegressor(random_state=RANDOM_SEED, n_jobs=-1),
+    ]
+    print(f"Looping through: {models}")
+
+    for model in models:
+        before_time = time()
+        model.fit(X_train, y_train)
+        ypreds = model.predict(X_test)
+        total_time = time() - before_time
+
+        mae, rmse, r2 = get_mae_rmse(y_test.tolist(), ypreds)
+
+        print(f"Naive {model} predicting {y_col}:")
+        print(f"R^2: {round(r2,3)}")
+        # get difference in hours instead of seconds
+        print(f"MAE: {round(mae/ (60*60))} hours  = {round(mae / (60*60*24))} days")
+        print(f"RMSE: {round(rmse/ (60*60))} hours  = {round(rmse / (60*60*24))} days")
+    print()
+    print(f"Total time for fitting and predicting: {total_time} seconds")
+    exit(0)
 
     # pickling y_test
     with open(f"data/y_test_{target_var}.pkl", "wb") as file:
