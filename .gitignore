@@ -1,3 +1,9 @@
+# csv 
+!incidentProcess_custom.csv
+!rem_time.csv
+!rem_act.csv
+# data/
+
 *.*
 !y_preds*.pkl
 !y_test*.pkl
@@ -15,11 +21,6 @@ debug*.py
 # Pickle
 *.pkl
 
-# csv 
-*.csv
-
-
-data/
 
 # Mac shait
 .DS_Store
