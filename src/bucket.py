@@ -8,7 +8,6 @@ from typing import Any
 # TODO fix sklearn models
 # TODO make OHE cols of all activities found
 # TODO predict moet per event een prediction geven
-# ✓ TODO check if append() works
 # TODO integrate a scoring function (e.g. MAE, MSE, Cross Entropy)
 # TODO train val split
 # TODO implement cross_val_score()
