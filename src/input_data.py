@@ -86,7 +86,7 @@ class InputData:
         data["PrevEvents"] = data["Activity"].apply(
             lambda x: [] if pd.isnull(x) else [x]
         )
-        data["PrevEvents"] = data.groupby("Incident ID")["PrevEvents"].apply(
+        data["PrevEvents"] = data.groupby("Incident ID", group_keys=False)["PrevEvents"].apply(
             lambda x: x.cumsum()
         )
 

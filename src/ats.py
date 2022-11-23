@@ -2,8 +2,10 @@ import sys
 import pandas as pd
 from src.state import State
 from src.helper import print_progress_bar
+from src.representation import Representation
 import pickle
 import datetime
+from typing import Any
 
 
 class ATS:
@@ -12,7 +14,7 @@ class ATS:
         case_id_col: str,
         act_col: str,
         y_col: str,
-        representation: str = "trace",
+        representation: Representation = Representation.TRACE,
         horizon: int = sys.maxsize,  # infite
         filter_out: list = [],
         seed: int = 42,
@@ -21,20 +23,20 @@ class ATS:
 
         print("START CREATING ATS")
 
-        self.case_id_col = case_id_col
-        self.act_col = act_col
-        self.y_col = y_col
+        self.case_id_col: str = case_id_col
+        self.act_col: str = act_col
+        self.y_col: str = y_col
 
-        self.rep = representation
-        self.horizon = horizon
-        self.filter_out = filter_out
+        self.representation: Representation = representation
+        self.horizon: int = horizon
+        self.filter_out: list = filter_out
 
-        self.seed = seed
-        self.cv = cv
+        self.seed: int = seed
+        self.cv: int = cv
 
-        self.finalized = False
+        self.finalized: bool = False
 
-        empty_state = State(
+        empty_state: State = State(
             0,
             [],
             representation,
@@ -43,7 +45,8 @@ class ATS:
             seed,
             cv,
         )
-        self.states = [empty_state]
+        self.states: list[State] = [empty_state]
+        self.model: Any = None
 
     def check_subseq_states(self, activities: str, state_ids: int) -> int:
         """
@@ -119,7 +122,8 @@ class ATS:
             State(
                 id=state_id,
                 activities=activities,
-                representation=self.rep,
+                representation=self.representation,
+                # under here are the Bucket parameters
                 y_col=self.y_col,
                 cols_to_drop=[self.case_id_col, self.act_col],
                 seed=self.seed,
@@ -138,15 +142,14 @@ class ATS:
         act = act[-self.horizon :]
 
         # representation
-        if self.rep == "set":
+        if self.representation == Representation.SET:
             act = sorted(list(set(act)))
-        elif self.rep == "multiset":
+        elif self.representation == Representation.MULTISET:
             act = sorted(act)
 
         return act.copy()
 
     def add_trace(self, trace: list[dict], y_vals) -> None:
-
         """
         This function, given a trace (i.e., events that belong to the same incident),
         creates all the required states.
@@ -198,6 +201,7 @@ class ATS:
             df : pd.Dataframe
                 The event log
         """
+
         self.x_cols = X.columns.tolist()
         self.y_col = y.name
 
@@ -209,10 +213,9 @@ class ATS:
         print_progress_bar(0, length, prefix="Fit:", suffix="Complete", length=50)
         for name, group in grouped:
 
-            y = group.pop(self.y_col).tolist()
-            X = group.to_dict("records")
+            y = group.pop(self.y_col).tolist()  # TODO: let y be pd.Series
+            X = group.to_dict("records")  # TODO: let X be pd.DataFrame
 
-            # self.add_trace(group.to_dict("records"))
             self.add_trace(X, y)
 
             print_progress_bar(
@@ -266,8 +269,7 @@ class ATS:
 
         print("\n")  # some weird bug in the progress bar
 
-    def predict(self, event: dict) -> float:
-
+    def predict_one(self, event: dict) -> float:
         """
 
         Function that traverses the ATS to find the bucket that must
@@ -287,38 +289,40 @@ class ATS:
 
         """
 
-        search_term = []
-        state = self.states[0]
-        state_id = 0
+        if self.finalized:
+            search_term = []
+            state = self.states[0]
+            state_id = 0
 
-        for l in range(1, len(event["PrevEvents"]) + 1):
+            for l in range(1, len(event["PrevEvents"]) + 1):
 
-            sub_seq = state.subsequent_states
+                sub_seq = state.subsequent_states
 
-            search_term = event["PrevEvents"][:l]
-            search_term = self.transform_rep(search_term)
+                search_term = event["PrevEvents"][:l]
+                search_term = self.transform_rep(search_term)
 
-            next_state = 0
+                next_state = 0
 
-            for s in sub_seq:
-                if self.states[s].activities == search_term:
-                    state = self.states[s]
-                    state_id = s
-                    next_state = 1
-                    break
+                for s in sub_seq:
+                    if self.states[s].activities == search_term:
+                        state = self.states[s]
+                        state_id = s
+                        next_state = 1
+                        break
 
-            if event["PrevEvents"] == state.activities or next_state == 0:
+                if event["PrevEvents"] == state.activities or next_state == 0:
 
-                return state.predict(event)
+                    return state.predict(event)
 
-        return state.predict(event)
+            return state.predict(event)
+        else:
+            raise RuntimeError(
+                "The ATS was not yet finalized. Do this first before running ATS.predict_one()"
+            )
 
-    def finalize(self, model, progress_bar=True) -> None:
-        """
-        This function finalizes the ATS such that can work as
-        a prediction model.
+    def finalize(self, model, progress_bar: bool = True) -> None:
+        """This function finalizes the ATS by giving each bucket a model to predict with."""
 
-        """
         self.model = model
         self.finalized = True
 
@@ -343,7 +347,13 @@ class ATS:
 
             print("\n")
 
-    def save(self, name: str = "ats"):
+    def definalize(self) -> None:
+        self.model = None
+        self.finalized = False
 
-        filehandler = open(f"data/{name}.pkl", "wb")
+    def save(self, name: str = "ats", dir: str = "./data") -> str:
+        file = f"{dir}/{name}.pkl"
+        filehandler = open(file, "wb")
         pickle.dump(self, filehandler)
+
+        return file
