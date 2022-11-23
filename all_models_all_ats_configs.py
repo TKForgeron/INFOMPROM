@@ -34,6 +34,7 @@ from src.globals import (
     TIME_TARGET_COLUMN,
     ACTIVITY_TARGET_COLUMN,
 )
+from src.representation import Representation
 
 
 if __name__ == "__main__":
@@ -49,7 +50,9 @@ if __name__ == "__main__":
         # HistGradientBoostingRegressor(random_state=RANDOM_SEED, warm_start=True),
         # BaggingRegressor(random_state=RANDOM_SEED, n_jobs=8),
     ]
-    representations = ["multiset"]  # , 'set', "trace"]
+    representations = [
+        Representation.MULTISET
+    ]  # , Representation.SET, Representation.TRACE]
     horizons = [1]  # [1, 2, 4, 8] # 2 works worse, 5 even worse
     print(
         f"Looping through: {y_cols}, {models}, {representations}, and horizons: {horizons}"

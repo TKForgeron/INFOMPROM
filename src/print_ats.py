@@ -1,6 +1,4 @@
 import networkx as nx
-import pylab as plt
-
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
@@ -54,6 +52,6 @@ def print_ATS(ATS):
 
     nx.draw(G, with_labels=True, font_size=8)
     plt.legend(handles=handles_dict)
-    plt.savefig("plots/labels.png")
+    plt.savefig("results/plots/labels.png")
 
     # plt.show()
